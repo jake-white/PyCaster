@@ -5,9 +5,8 @@ class GameLoop(object):
     shouldBeRunning = True
     interval = 10
 
-    def __init__(self, interval, screen):
+    def __init__(self, screen):
         # requires a looping interval (ms) and a screen object
-        self.interval = interval
         self.screen = screen
 
     def start(self):
@@ -29,7 +28,7 @@ class GameLoop(object):
         self.screen.draw()
 
     def getInterval(self):
-        return self.Sinterval
+        return self.interval
 
     def getTimeSinceTick(self):
         return self.timeSinceTick

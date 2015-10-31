@@ -1,9 +1,14 @@
 import pygame, sys
 
+
 class Screen():
     def __init__(self, title, width, height):
+        self.width = width
+        self.height = height
+        self.title = title
         pygame.init()
-        self.screen = pygame.display.set_mode((640,480))
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption(self.title)
         self.white = (255,255,255)
 
     def draw(self):
