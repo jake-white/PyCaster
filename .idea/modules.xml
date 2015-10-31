@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://D:/Google Drive/College/CSCI230/python/PyCaster/.idea/PyCaster.iml" filepath="D:/Google Drive/College/CSCI230/python/PyCaster/.idea/PyCaster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/PyCaster.iml" filepath="$PROJECT_DIR$/.idea/PyCaster.iml" />
     </modules>
   </component>
 </project>
