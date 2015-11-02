@@ -6,6 +6,7 @@
 from world import *
 from render import *
 from gamelogic import *
+from raycaster import *
 
 
 def main():
@@ -15,11 +16,12 @@ def main():
 
 
 def configure():
-    global world, player, screen, loop
+    global world, player, screen, loop, caster
     world = World(5, 5)
     player = Player(2, 2)
-    screen = Screen("PyCaster", 400, 300)
-    loop = GameLoop(screen)
+    caster = RayCaster()
+    screen = Screen(caster, "PyCaster", 400, 300)
+    loop = GameLoop(screen, caster)
     print("Player placed at {}, {} in a {}x{} world.".format(player.getX(), player.getY(), world.getLength(), world.getWidth()))
     print(world.getCoords())
 

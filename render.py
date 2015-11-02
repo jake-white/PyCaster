@@ -2,10 +2,11 @@ import pygame, sys
 
 
 class Screen():
-    def __init__(self, title, width, height):
+    def __init__(self, raycaster, title, width, height):
         self.width = width
         self.height = height
         self.title = title
+        self.raycaster = raycaster
         pygame.init()
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(self.title)

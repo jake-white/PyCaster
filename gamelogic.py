@@ -5,9 +5,10 @@ class GameLoop(object):
     shouldBeRunning = True
     interval = 10
 
-    def __init__(self, screen):
+    def __init__(self, screen, raycaster):
         # requires a looping interval (ms) and a screen object
         self.screen = screen
+        self.raycaster = raycaster
 
     def start(self):
         print("Loop starting...")
@@ -25,6 +26,7 @@ class GameLoop(object):
         self.shouldBeRunning = False
 
     def tick(self):
+        self.raycaster.cast()
         self.screen.draw()
 
     def getInterval(self):
