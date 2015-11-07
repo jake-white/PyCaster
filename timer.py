@@ -11,15 +11,8 @@ class Timer(object):
     def start(self):
         self.shouldBeRunning = True
         print("Loop starting...")
-        self.timeSinceTick = self.interval
-        currentTime = time.time()
         while self.shouldBeRunning:
-            self.timeSinceTick = timeInMillis() - currentTime
-            #print(timeElapsed)
-            if self.timeSinceTick >= self.interval:
-                self.tick()
-                currentTime = timeInMillis()
-                #print(currentTime)
+            self.tick()
                 
     def stop(self):
         self.shouldBeRunning = False

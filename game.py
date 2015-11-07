@@ -9,12 +9,11 @@ class Game():
     screenX = 400
     screenY = 300
     def __init__(self):
-        world = World(5, 5, 2, 2)
-        self.caster = RayCaster(world, self.screenX)
+        self.world = World(5, 5, 1, 2)
+        self.caster = RayCaster(self.world, self.screenX)
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
-        print("Player placed at {}, {} in a {}x{} world.".format(world.getPlayer().getX(), world.getPlayer().getY(), world.getLength(), world.getWidth()))
-        print(world.getCoords())
+        print(self.world.getCoords())
 
     def start(self):
         self.loop.start()
@@ -22,22 +21,41 @@ class Game():
     def tick(self):
         self.caster.cast()
         self.draw()
-        print("TICK")
+        self.eventCatcher()
 
     def draw(self):
-        print("drawn!")
         white = (255,255,255)
+        red = (255,0,0)
+        black = (0,0,0)
         self.screen.fill(white)
+        pygame.draw.lines(self.screen, red, False, [(self.screenX/2, 0), (self.screenX/2, self.screenY)], 1)
+        for i in range(0, len(self.caster.getColumnList())):
+            if(self.caster.getColumn(i) != None):
+                columnHeight = self.screenY/self.caster.getColumn(i)
+                pointlist = [(i, self.screenY/2 - columnHeight/2), (i, self.screenY/2 + columnHeight/2)]
+                pygame.draw.lines(self.screen, black, False, pointlist, 1)
         pygame.display.update()
-        self.eventCatcher()
 
     def eventCatcher(self):
         #catching pygame generated events
         for event in pygame.event.get():
             #closes both the pygame module and forces the program to end
             if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if pygame.key.get_pressed()[pygame.K_q]:
+                    self.world.getPlayer().increaseAngle(0.1)
+                if pygame.key.get_pressed()[pygame.K_e]:
+                    self.world.getPlayer().increaseAngle(-0.1)
+                if pygame.key.get_pressed()[pygame.K_a]:
+                    self.world.getPlayer().increaseX(0.1)
+                if pygame.key.get_pressed()[pygame.K_d]:
+                    self.world.getPlayer().increaseX(-0.1)
+                if pygame.key.get_pressed()[pygame.K_w]:
+                    self.world.getPlayer().increaseY(0.1)
+                if pygame.key.get_pressed()[pygame.K_s]:
+                    self.world.getPlayer().increaseY(-0.1)
 
 def configureScreen(screenX, screenY):
         pygame.init()

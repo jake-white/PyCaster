@@ -11,6 +11,7 @@ from game import *
 def main():
     game = Game()
     game.start()
+    #game.tick()
     print("Started.")
 
 
