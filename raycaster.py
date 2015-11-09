@@ -22,7 +22,12 @@ class RayCaster(object):
             posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
             posDirY = currentAngle > math.pi
             #checking horizontally
+            if(posDirY):
+                startY = int(playerY) + 1
+            else:
+                startY = int(playerY)
             currentAngle += angleIncrement
+
 
     def getColumn(self, col):
         return self.columns[col]

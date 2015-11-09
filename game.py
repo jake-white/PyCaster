@@ -28,7 +28,6 @@ class Game():
         red = (255,0,0)
         black = (0,0,0)
         self.screen.fill(white)
-        pygame.draw.lines(self.screen, red, False, [(self.screenX/2, 0), (self.screenX/2, self.screenY)], 1)
         for i in range(0, len(self.caster.getColumnList())):
             if(self.caster.getColumn(i) != None):
                 columnHeight = self.screenY/self.caster.getColumn(i)
