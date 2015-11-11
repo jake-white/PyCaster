@@ -9,7 +9,7 @@ class Game():
     screenX = 400
     screenY = 300
     def __init__(self):
-        self.world = World(5, 5, 1, 2)
+        self.world = World(5, 5, 1, 1)
         self.caster = RayCaster(self.world, self.screenX)
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
@@ -28,11 +28,19 @@ class Game():
         red = (255,0,0)
         black = (0,0,0)
         self.screen.fill(white)
+        pygame.draw.lines(self.screen, red, False, [(self.screenX/2, 0), (self.screenX/2, self.screenY)], 1)
+
         for i in range(0, len(self.caster.getColumnList())):
-            if(self.caster.getColumn(i) != None):
+            if(self.caster.getColumn(i) >= 0):
                 columnHeight = self.screenY/self.caster.getColumn(i)
                 pointlist = [(i, self.screenY/2 - columnHeight/2), (i, self.screenY/2 + columnHeight/2)]
-                pygame.draw.lines(self.screen, black, False, pointlist, 1)
+                pygame.draw.lines(self.screen, self.caster.getColor(i), False, pointlist, 1)
+
+        font = pygame.font.Font(None, 20)
+        text = font.render(self.caster.getInfo(), 1, red)
+        textpos = text.get_rect()
+        self.screen.blit(text, textpos)
+
         pygame.display.update()
 
     def eventCatcher(self):
@@ -48,13 +56,13 @@ class Game():
                 if pygame.key.get_pressed()[pygame.K_e]:
                     self.world.getPlayer().increaseAngle(-0.1)
                 if pygame.key.get_pressed()[pygame.K_a]:
-                    self.world.getPlayer().increaseX(0.1)
-                if pygame.key.get_pressed()[pygame.K_d]:
                     self.world.getPlayer().increaseX(-0.1)
+                if pygame.key.get_pressed()[pygame.K_d]:
+                    self.world.getPlayer().increaseX(0.1)
                 if pygame.key.get_pressed()[pygame.K_w]:
-                    self.world.getPlayer().increaseY(0.1)
-                if pygame.key.get_pressed()[pygame.K_s]:
                     self.world.getPlayer().increaseY(-0.1)
+                if pygame.key.get_pressed()[pygame.K_s]:
+                    self.world.getPlayer().increaseY(0.1)
 
 def configureScreen(screenX, screenY):
         pygame.init()

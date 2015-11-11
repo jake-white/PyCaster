@@ -2,13 +2,14 @@ import math
 
 
 class Point(object):
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
     def distanceTo(self, point):
         #d^2 = x^2 + y^2
-        return math.sqrt(math.fabs(math.pow((self.y - point.y), 2)) + math.abs(math.pow(self.x - point.x), 2))
+        return math.sqrt(math.pow(self.y - point.y, 2) + math.pow((self.x - point.x), 2))
 
     def getX(self):
         return self.x
@@ -27,3 +28,6 @@ class Point(object):
 
     def increaseX(self, increment):
         self.x += increment
+
+    def toString(self):
+        return "({}, {})".format(self.x, self.y)

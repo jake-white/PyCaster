@@ -8,9 +8,9 @@ class World(object):
     def __init__(self, width, height, playerX, playerY):
         object.__init__(self)
         #self.coordList = [[0 for _ in range(length)] for _ in range(width)]
-        self.coordList = [[0,0,0,0,0],
-                          [0,0,0,1,0],
+        self.coordList = [[0,0,1,0,0],
                           [0,0,0,0,0],
+                          [0,0,1,0,0],
                           [0,0,0,0,0],
                           [0,0,0,0,0]]
         self.width = width
@@ -33,7 +33,9 @@ class World(object):
         return self.coordList
 
     def getCoordAt(self, point):
-        return self.coordList[point.getY()][point.getX()]
+        #x and y are reversed because the list is visually "reversed" from the coordinate plane.
+        #I could make it proper but that would just mess with my ability to debug.
+        return self.coordList[int(point.getY())][int(point.getX())]
 
     def getPlayer(self):
         return self.player
