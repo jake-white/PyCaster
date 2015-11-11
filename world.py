@@ -1,21 +1,37 @@
 import math
 from geometry import *
+from PIL import Image
 
 
 class World(object):
-    coordList = list()
 
-    def __init__(self, width, height, playerX, playerY):
+    def __init__(self, worldname):
         object.__init__(self)
-        #self.coordList = [[0 for _ in range(length)] for _ in range(width)]
-        self.coordList = [[0,0,1,0,0],
-                          [0,0,0,0,0],
-                          [0,0,1,0,0],
-                          [0,0,0,0,0],
-                          [0,0,0,0,0]]
-        self.width = width
-        self.height = height
+        self.readImage(worldname)
+
+
+    def readImage(self, worldname):
+        self.image = Image.open(worldname).convert('RGB')
+        self.width = self.image.size[0]
+        self.height = self.image.size[1]
+        self.coordList = [[(0, 0, 0) for _ in range(self.height)] for _ in range(self.width)]
+        print("world.png is {}x{}".format(self.width, self.height))
+        playerX = None
+        playerY = None
+        for x in range (0, self.width):
+            for y in range(0, self.height):
+                if self.image.getpixel((x, y)) == (255, 0, 0) and playerX == None:
+                    playerX = x
+                    playerY = y
+                    self.coordList[x][y] = (255, 255, 255) #there is not actually a red block there, rather it's blank
+                else:
+                    self.coordList[x][y] = self.image.getpixel((x, y))
+                    if(self.coordList[x][y] != (255, 255, 255)):
+                        print("Point confirmed at ({}, {})".format(x, y))
+
         self.player = Player(playerX, playerY)
+        print("Player created at ({}, {})".format(playerX, playerY))
+
 
     def getWidth(self):
         return self.width
@@ -35,7 +51,7 @@ class World(object):
     def getCoordAt(self, point):
         #x and y are reversed because the list is visually "reversed" from the coordinate plane.
         #I could make it proper but that would just mess with my ability to debug.
-        return self.coordList[int(point.getY())][int(point.getX())]
+        return self.coordList[int(point.getX())][int(point.getY())]
 
     def getPlayer(self):
         return self.player

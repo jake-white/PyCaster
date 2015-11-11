@@ -16,7 +16,3 @@ class Timer(object):
                 
     def stop(self):
         self.shouldBeRunning = False
-
-
-def timeInMillis():
-    return time.time() * 1000

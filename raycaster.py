@@ -24,6 +24,7 @@ class RayCaster(object):
         playerPoint = Point(playerX, playerY)
         #starting casting rays for every pixel of screen length
         for i in range(0, self.screenX):
+            fisheye = math.cos(math.fabs(currentAngle-angle))
             currentAngle = validateAngle(currentAngle)
             posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
             posDirY = currentAngle > math.pi
@@ -54,10 +55,13 @@ class RayCaster(object):
                 if currentPoint.x > self.world.getMaxWidth() or currentPoint.y > self.world.getMaxHeight() or currentPoint.x < 0 or currentPoint.y < 0:
                     distanceX = -1
                     hit = True
-                elif self.world.getCoordAt(checkPoint) != 0:
-                    print("Horizontal block at {}".format(checkPoint.toString()))
+                elif self.world.getCoordAt(checkPoint) != (255, 255, 255):
                     hit = True
-                    distanceX = playerPoint.distanceTo(currentPoint)
+                    distanceX = playerPoint.distanceTo(currentPoint)*fisheye
+                    if(currentPoint.x %1 < 0.01):
+                        colorX = (0,0,0)
+                    else:
+                        colorX = self.world.getCoordAt(checkPoint)
 
                 currentPoint.increaseX(deltaX)
                 currentPoint.increaseY(deltaY)
@@ -88,23 +92,26 @@ class RayCaster(object):
                 if currentPoint.x > self.world.getMaxWidth() or currentPoint.y > self.world.getMaxHeight() or currentPoint.x < 0 or currentPoint.y < 0:
                     distanceY = -1
                     hit = True
-                elif self.world.getCoordAt(checkPoint) != 0:
-                    print("Vertical block at {}".format(checkPoint.toString()))
+                elif self.world.getCoordAt(checkPoint) != (255, 255, 255):
                     hit = True
-                    distanceY = playerPoint.distanceTo(currentPoint)
+                    distanceY = playerPoint.distanceTo(currentPoint)*fisheye
+                    if(currentPoint.y %1 < 0.05):
+                        colorY = (0,0,0)
+                    else:
+                        colorY = self.world.getCoordAt(checkPoint)
 
                 currentPoint.increaseX(deltaX)
                 currentPoint.increaseY(deltaY)
 
             if((distanceX <= distanceY or distanceY < 0) and distanceX >= 0):
                 self.columns[i] = distanceX
-                self.colors[i] = (0, 255, 0)
+                self.colors[i] = colorX
             elif distanceY >= 0:
                 self.columns[i] = distanceY
-                self.colors[i] = (0,0,0)
+                self.colors[i] = colorY
             else:
                 self.columns[i] = -1
-                self.colors[i] = (0,0,0)
+                self.colors[i] = (255, 255, 255)
             if(self.columns[i] == 0):
                 #don't wanna divide by zero
                 self.columns[i] = 0.1
@@ -140,13 +147,3 @@ def validateAngle(angle):
     while angle < 0:
         angle += 2*math.pi
     return angle
-
-def getQuadrant(angle):
-    if angle < (1/2)*math.pi:
-        return 1
-    elif angle < math.pi:
-        return 2
-    elif angle < (3/2)*math.pi:
-        return 3
-    elif angle < 2*math.pi:
-        return 4

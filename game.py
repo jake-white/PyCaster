@@ -12,11 +12,10 @@ class Game():
     KEY_E = False
     KEY_W = False
     def __init__(self):
-        self.world = World(5, 5, 1, 1)
+        self.world = World("world.png")
         self.caster = RayCaster(self.world, self.screenX)
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
-        print(self.world.getCoords())
 
     def start(self):
         self.loop.start()
@@ -24,6 +23,7 @@ class Game():
     def tick(self):
         self.caster.cast()
         self.draw()
+        lastFrame =
         self.eventCatcher()
         self.movementHandler()
 
@@ -35,10 +35,14 @@ class Game():
         pygame.draw.lines(self.screen, red, False, [(self.screenX/2, 0), (self.screenX/2, self.screenY)], 1)
 
         for i in range(0, len(self.caster.getColumnList())):
-            if(self.caster.getColumn(i) >= 0):
+            if(self.caster.getColumn(i) > 0):
                 columnHeight = self.screenY/self.caster.getColumn(i)
                 pointlist = [(i, self.screenY/2 - columnHeight/2), (i, self.screenY/2 + columnHeight/2)]
+                topPointlist = [(i, self.screenY/2 - columnHeight/2), (i, self.screenY/2 - columnHeight/2)]
+                bottomPointlist = [(i, self.screenY/2 + columnHeight/2), (i, self.screenY/2 + columnHeight/2)]
                 pygame.draw.lines(self.screen, self.caster.getColor(i), False, pointlist, 1)
+                pygame.draw.lines(self.screen, black, False, topPointlist, 1)
+                pygame.draw.lines(self.screen, black, False, bottomPointlist, 1)
 
         font = pygame.font.Font(None, 20)
         text = font.render(self.caster.getInfo(), 1, red)
@@ -80,6 +84,10 @@ class Game():
         if self.KEY_W:
             self.world.getPlayer().increaseX(xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(yDir*math.fabs(math.sin(currentAngle)*0.1))
+        elif self.KEY_S:
+            self.world.getPlayer().increaseX(-xDir*math.fabs(math.cos(currentAngle)*0.1))
+            self.world.getPlayer().increaseY(-yDir*math.fabs(math.sin(currentAngle)*0.1))
+
 
 
 def configureScreen(screenX, screenY):
@@ -87,3 +95,6 @@ def configureScreen(screenX, screenY):
         screen = pygame.display.set_mode((screenX, screenY))
         pygame.display.set_caption("PyCaster")
         return screen
+
+def timeInMillis():
+    return time.time() * 1000
