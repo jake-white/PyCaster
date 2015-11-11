@@ -16,5 +16,6 @@ Then, open a CMD line under that directory and run the command **pip3 install fi
 
 As far as this tech demo goes, you can download as zip through GitHub (over on the right-hand side) and run main.py with Python 3.5 or honestly whatever Python 3 version you installed pygame/Pillow under.  Shouldn't matter too much.
 
+#Sources/More Information
 
-
+http://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/ - Somewhat outdated, but still solid to understand the concept behind raycasting. (To give you an idea, the article was published in 1996)
