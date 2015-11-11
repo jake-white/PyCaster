@@ -105,6 +105,9 @@ class RayCaster(object):
             else:
                 self.columns[i] = -1
                 self.colors[i] = (0,0,0)
+            if(self.columns[i] == 0):
+                #don't wanna divide by zero
+                self.columns[i] = 0.1
             currentAngle -= angleIncrement
             self.info = "Player: ({}, {}) at A = {}".format(playerX, playerY, angle)
 

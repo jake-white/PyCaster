@@ -8,6 +8,9 @@ from raycaster import *
 class Game():
     screenX = 400
     screenY = 300
+    KEY_Q = False
+    KEY_E = False
+    KEY_W = False
     def __init__(self):
         self.world = World(5, 5, 1, 1)
         self.caster = RayCaster(self.world, self.screenX)
@@ -22,6 +25,7 @@ class Game():
         self.caster.cast()
         self.draw()
         self.eventCatcher()
+        self.movementHandler()
 
     def draw(self):
         white = (255,255,255)
@@ -50,19 +54,33 @@ class Game():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if pygame.key.get_pressed()[pygame.K_q]:
-                    self.world.getPlayer().increaseAngle(0.1)
-                if pygame.key.get_pressed()[pygame.K_e]:
-                    self.world.getPlayer().increaseAngle(-0.1)
-                if pygame.key.get_pressed()[pygame.K_a]:
-                    self.world.getPlayer().increaseX(-0.1)
-                if pygame.key.get_pressed()[pygame.K_d]:
-                    self.world.getPlayer().increaseX(0.1)
-                if pygame.key.get_pressed()[pygame.K_w]:
-                    self.world.getPlayer().increaseY(-0.1)
-                if pygame.key.get_pressed()[pygame.K_s]:
-                    self.world.getPlayer().increaseY(0.1)
+            self.KEY_Q  = pygame.key.get_pressed()[pygame.K_q]
+            self.KEY_E = pygame.key.get_pressed()[pygame.K_e]
+            self.KEY_A = pygame.key.get_pressed()[pygame.K_a]
+            self.KEY_D = pygame.key.get_pressed()[pygame.K_d]
+            self.KEY_W = pygame.key.get_pressed()[pygame.K_w]
+            self.KEY_S = pygame.key.get_pressed()[pygame.K_s]
+
+    def movementHandler(self):
+        currentAngle = self.world.getPlayer().getAngle()
+        posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
+        posDirY = currentAngle > math.pi
+        if(posDirX):
+            xDir = 1
+        else:
+            xDir = -1
+        if(posDirY):
+            yDir = 1
+        else:
+            yDir = -1
+        if self.KEY_Q:
+            self.world.getPlayer().increaseAngle(0.1)
+        elif self.KEY_E:
+            self.world.getPlayer().increaseAngle(-0.1)
+        if self.KEY_W:
+            self.world.getPlayer().increaseX(xDir*math.fabs(math.cos(currentAngle)*0.1))
+            self.world.getPlayer().increaseY(yDir*math.fabs(math.sin(currentAngle)*0.1))
+
 
 def configureScreen(screenX, screenY):
         pygame.init()
