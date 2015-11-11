@@ -6,12 +6,14 @@ from raycaster import *
 
 
 class Game():
-    screenX = 400
-    screenY = 300
+    screenX = 600
+    screenY = 500
+    frameRate = 0
     KEY_Q = False
     KEY_E = False
     KEY_W = False
     def __init__(self):
+        self.lastFrame = timeInMillis()
         self.world = World("world.png")
         self.caster = RayCaster(self.world, self.screenX)
         self.loop = Timer(self.tick)
@@ -23,7 +25,8 @@ class Game():
     def tick(self):
         self.caster.cast()
         self.draw()
-        lastFrame =
+        self.frameRate = 1000/(timeInMillis()-self.lastFrame)
+        self.lastFrame = timeInMillis()
         self.eventCatcher()
         self.movementHandler()
 
@@ -46,8 +49,9 @@ class Game():
 
         font = pygame.font.Font(None, 20)
         text = font.render(self.caster.getInfo(), 1, red)
-        textpos = text.get_rect()
-        self.screen.blit(text, textpos)
+        framerate = font.render("FPS: {}".format(self.frameRate), 1, red)
+        self.screen.blit(text, (0, 0))
+        self.screen.blit(framerate, (0, 20))
 
         pygame.display.update()
 
