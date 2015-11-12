@@ -1,13 +1,13 @@
 import math
-from geometry import *
 
 
 class RayCaster(object):
+    drawDistance = 5
     def __init__(self, world, screenX):
         self.world = world
         self.screenX = screenX
         #columns of the screen
-        #value = distance, None = nothing there
+        #value = distance, None = nomath.tan there
         self.columns = [None] * self.getScreenX()
         self.colors = [None] * self.getScreenX()
 
@@ -17,11 +17,11 @@ class RayCaster(object):
         angleIncrement = self.getPlayer().getFOV()/self.screenX
         angle = validateAngle(self.getPlayer().getAngle())
         startingAngle = angle + self.getPlayer().getFOV()/2
-        endingAngle = angle - self.getPlayer().getFOV()/2
         currentAngle = startingAngle
         playerX = self.getPlayer().getX()
         playerY = self.getPlayer().getY()
-        playerPoint = Point(playerX, playerY)
+        maxX = self.world.getMaxWidth()
+        maxY = self.world.getMaxHeight()
         #starting casting rays for every pixel of screen length
         for i in range(0, self.screenX):
             fisheye = math.cos(math.fabs(currentAngle-angle))
@@ -46,25 +46,27 @@ class RayCaster(object):
                 deltaX = -math.fabs(deltaY/math.tan(currentAngle))
 
             hit = False
-            currentPoint = Point(startX, startY)
+            currentX = startX
+            currentY = startY
             while not hit:
+                checkX = currentX
                 if(posDirY):
-                    checkPoint = Point(currentPoint.x, currentPoint.y)
+                    checkY = currentY
                 else:
-                    checkPoint = Point(currentPoint.x, currentPoint.y - 1)
-                if currentPoint.x > self.world.getMaxWidth() or currentPoint.y > self.world.getMaxHeight() or currentPoint.x < 0 or currentPoint.y < 0:
+                    checkY = currentY - 1
+                if currentX > maxX or currentY > maxY or currentX < 0 or currentY < 0:
                     distanceX = -1
                     hit = True
-                elif self.world.getCoordAt(checkPoint) != (255, 255, 255):
+                elif self.world.getCoordAt(checkX, checkY) != (255, 255, 255):
                     hit = True
-                    distanceX = playerPoint.distanceTo(currentPoint)*fisheye
-                    if(currentPoint.x %1 < 0.01):
+                    distanceX = self.distanceTo(playerX, playerY, currentX, currentY)*fisheye
+                    if(currentX %1 < 0.05):
                         colorX = (0,0,0)
                     else:
-                        colorX = self.world.getCoordAt(checkPoint)
+                        colorX = self.world.getCoordAt(checkX, checkY)
 
-                currentPoint.increaseX(deltaX)
-                currentPoint.increaseY(deltaY)
+                currentX += deltaX
+                currentY += deltaY
 
             #------------checking vertically------------
             if(posDirX):
@@ -83,25 +85,27 @@ class RayCaster(object):
                 deltaY = -math.fabs(math.tan(currentAngle)*(deltaX))
 
             hit = False
-            currentPoint = Point(startX, startY)
+            currentX = startX
+            currentY = startY
             while not hit:
+                checkY = currentY
                 if posDirX:
-                    checkPoint = Point(currentPoint.x, currentPoint.y)
+                    checkX = currentX
                 else:
-                    checkPoint = Point(currentPoint.x - 1, currentPoint.y)
-                if currentPoint.x > self.world.getMaxWidth() or currentPoint.y > self.world.getMaxHeight() or currentPoint.x < 0 or currentPoint.y < 0:
+                    checkX = currentX - 1
+                if currentX > maxX or currentY > maxY or currentX < 0 or currentY < 0:
                     distanceY = -1
                     hit = True
-                elif self.world.getCoordAt(checkPoint) != (255, 255, 255):
+                elif self.world.getCoordAt(checkX, checkY) != (255, 255, 255):
                     hit = True
-                    distanceY = playerPoint.distanceTo(currentPoint)*fisheye
-                    if(currentPoint.y %1 < 0.05):
+                    distanceY = self.distanceTo(playerX, playerY, currentX, currentY)*fisheye
+                    if(currentY %1 < 0.05):
                         colorY = (0,0,0)
                     else:
-                        colorY = self.world.getCoordAt(checkPoint)
+                        colorY = self.world.getCoordAt(checkX, checkY)
 
-                currentPoint.increaseX(deltaX)
-                currentPoint.increaseY(deltaY)
+                currentX += deltaX
+                currentY += deltaY
 
             if((distanceX <= distanceY or distanceY < 0) and distanceX >= 0):
                 self.columns[i] = distanceX
@@ -110,13 +114,17 @@ class RayCaster(object):
                 self.columns[i] = distanceY
                 self.colors[i] = colorY
             else:
-                self.columns[i] = -1
+                self.columns[i] = None
                 self.colors[i] = (255, 255, 255)
             if(self.columns[i] == 0):
                 #don't wanna divide by zero
                 self.columns[i] = 0.1
             currentAngle -= angleIncrement
             self.info = "Player: ({}, {}) at A = {}".format(playerX, playerY, angle)
+
+    def distanceTo(self, x1, y1, x2, y2):
+        #d^2 = x^2 + y^2
+        return math.sqrt(math.pow(y1 - y2, 2) + math.pow(x1 - x2, 2))
 
 
     def getColumn(self, col):

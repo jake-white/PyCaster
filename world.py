@@ -1,5 +1,4 @@
 import math
-from geometry import *
 from PIL import Image
 
 
@@ -48,10 +47,10 @@ class World(object):
     def getCoords(self):
         return self.coordList
 
-    def getCoordAt(self, point):
+    def getCoordAt(self, x, y):
         #x and y are reversed because the list is visually "reversed" from the coordinate plane.
         #I could make it proper but that would just mess with my ability to debug.
-        return self.coordList[int(point.getX())][int(point.getY())]
+        return self.coordList[int(x)][int(y)]
 
     def getPlayer(self):
         return self.player
@@ -59,17 +58,18 @@ class World(object):
 
 class Player(object):
     #angle measurements are in radians
-    angle = 0
+    angle = math.pi/2
     FOV = math.pi/2
 
     def __init__(self, x, y):
-        self.point = Point(x, y)
+        self.x = x
+        self.y = y
 
     def getX(self):
-        return self.point.getX()
+        return self.x
 
     def getY(self):
-        return self.point.getY()
+        return self.y
 
     def getAngle(self):
         self.validateAngle()
@@ -87,10 +87,10 @@ class Player(object):
         self.validateAngle()
 
     def increaseX(self, increment):
-        self.point.increaseX(increment)
+        self.x += increment
 
     def increaseY(self, increment):
-        self.point.increaseY(increment)
+        self.y += increment
 
     def getFOV(self):
         return self.FOV

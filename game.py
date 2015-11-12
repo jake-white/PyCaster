@@ -6,8 +6,8 @@ from raycaster import *
 
 
 class Game():
-    screenX = 600
-    screenY = 500
+    screenX = 800
+    screenY = 600
     frameRate = 0
     KEY_Q = False
     KEY_E = False
@@ -35,10 +35,9 @@ class Game():
         red = (255,0,0)
         black = (0,0,0)
         self.screen.fill(white)
-        pygame.draw.lines(self.screen, red, False, [(self.screenX/2, 0), (self.screenX/2, self.screenY)], 1)
 
         for i in range(0, len(self.caster.getColumnList())):
-            if(self.caster.getColumn(i) > 0):
+            if self.caster.getColumn(i) != None:
                 columnHeight = self.screenY/self.caster.getColumn(i)
                 pointlist = [(i, self.screenY/2 - columnHeight/2), (i, self.screenY/2 + columnHeight/2)]
                 topPointlist = [(i, self.screenY/2 - columnHeight/2), (i, self.screenY/2 - columnHeight/2)]
@@ -91,6 +90,8 @@ class Game():
         elif self.KEY_S:
             self.world.getPlayer().increaseX(-xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(-yDir*math.fabs(math.sin(currentAngle)*0.1))
+
+
 
 
 
