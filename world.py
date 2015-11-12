@@ -4,8 +4,10 @@ from PIL import Image
 
 class World(object):
 
-    def __init__(self, worldname):
+    def __init__(self, worldname, screenX, screenY):
         object.__init__(self)
+        self.screenX = screenX
+        self.screenY = screenY
         self.readImage(worldname)
 
 
@@ -55,10 +57,22 @@ class World(object):
     def getPlayer(self):
         return self.player
 
+    def setScreenX(self, screenX):
+        self.screenX = screenX
+
+    def setScreenY(self, screenY):
+        self.screenY = screenY
+
+    def getScreenX(self):
+        return self.screenX
+
+    def getScreenY(self):
+        return self.screenY
+
 
 class Player(object):
     #angle measurements are in radians
-    angle = math.pi/2
+    angle = math.pi/3
     FOV = math.pi/2
 
     def __init__(self, x, y):

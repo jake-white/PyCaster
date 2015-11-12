@@ -3,18 +3,18 @@ import math
 
 class RayCaster(object):
     drawDistance = 5
-    def __init__(self, world, screenX):
+    def __init__(self, world):
         self.world = world
-        self.screenX = screenX
         #columns of the screen
         #value = distance, None = nomath.tan there
-        self.columns = [None] * self.getScreenX()
-        self.colors = [None] * self.getScreenX()
 
 
     def cast(self):
+        self.columns = [None] * self.world.getScreenX()
+        self.colors = [None] * self.world.getScreenX()
         #defining some stuff to make this easier and not call 12 thousand functions every line
-        angleIncrement = self.getPlayer().getFOV()/self.screenX
+        screenX = self.world.getScreenX()
+        angleIncrement = self.getPlayer().getFOV()/screenX
         angle = validateAngle(self.getPlayer().getAngle())
         startingAngle = angle + self.getPlayer().getFOV()/2
         currentAngle = startingAngle
@@ -23,7 +23,7 @@ class RayCaster(object):
         maxX = self.world.getMaxWidth()
         maxY = self.world.getMaxHeight()
         #starting casting rays for every pixel of screen length
-        for i in range(0, self.screenX):
+        for i in range(0, screenX):
             fisheye = math.cos(math.fabs(currentAngle-angle))
             currentAngle = validateAngle(currentAngle)
             posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
@@ -61,7 +61,7 @@ class RayCaster(object):
                     hit = True
                     distanceX = self.distanceTo(playerX, playerY, currentX, currentY)*fisheye
                     if(currentX %1 < 0.05):
-                        colorX = (0,0,0)
+                        colorX = (0, 0, 0)
                     else:
                         colorX = self.world.getCoordAt(checkX, checkY)
 
@@ -138,9 +138,6 @@ class RayCaster(object):
 
     def getPlayer(self):
         return self.world.getPlayer()
-
-    def getScreenX(self):
-        return self.screenX
 
     def getWorld(self):
         return self.world
