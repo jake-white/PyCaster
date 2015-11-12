@@ -4,7 +4,7 @@ It is under development for the CSCI 23000 final project.
 
 # Installation Instructions
 To use this program, you will need to install pygame (gaming/drawing engine) and Pillow (3.x replacement for Python Imaging Library).
-These can be found here.  Make sure to download for the correct Python version and 32bit/64bit.
+These can be found in the lib folder of this project.  If you're not using Python 3.5 or are running 64-bit Python, you will probably need to download the correct version of these plugins yourself.
 
 http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame.
 
