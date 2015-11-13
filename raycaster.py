@@ -48,6 +48,7 @@ class RayCaster(object):
             hit = False
             currentX = startX
             currentY = startY
+            #information done, iterating through it now
             while not hit:
                 checkX = currentX
                 if(posDirY):
@@ -87,6 +88,7 @@ class RayCaster(object):
             hit = False
             currentX = startX
             currentY = startY
+            #information done, iterating through it now
             while not hit:
                 checkY = currentY
                 if posDirX:

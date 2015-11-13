@@ -21,10 +21,10 @@ class Game():
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
 
-    def start(self):
+    def start(self): #starting the game loop
         self.loop.start()
 
-    def tick(self):
+    def tick(self): #this gets called every time the game loops (ticks)
         self.caster.cast()
         self.draw()
         self.frameRate = 1000/(timeInMillis()-self.lastFrame)
@@ -37,7 +37,7 @@ class Game():
             lastPhysics = timeInMillis()
             self.movementHandler()
 
-    def draw(self):
+    def draw(self): #draws everything onscreen
         white = (255,255,255)
         red = (255,0,0)
         black = (0,0,0)
@@ -63,7 +63,7 @@ class Game():
 
         pygame.display.update()
 
-    def eventCatcher(self):
+    def eventCatcher(self): #catches pygame events
         #catching pygame generated events
         for event in pygame.event.get():
             #closes both the pygame module and forces the program to end
@@ -82,7 +82,7 @@ class Game():
                 self.world.setScreenY(event.dict['size'][1])
                 self.screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
 
-    def movementHandler(self):
+    def movementHandler(self): #uses info from eventCatcher
         currentAngle = self.world.getPlayer().getAngle()
         posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
         posDirY = currentAngle > math.pi
