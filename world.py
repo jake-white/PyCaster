@@ -5,6 +5,7 @@ from PIL import Image
 class World(object):
 
     def __init__(self, worldname, screenX, screenY):
+        print("creating new world")
         object.__init__(self)
         self.screenX = screenX
         self.screenY = screenY
@@ -16,6 +17,7 @@ class World(object):
         self.width = self.image.size[0]
         self.height = self.image.size[1]
         self.coordList = [[(0, 0, 0) for _ in range(self.height)] for _ in range(self.width)]
+        self.coordHeight = [[1 for _ in range(self.height)] for _ in range(self.width)]
         print("world.png is {}x{}".format(self.width, self.height))
         playerX = None
         playerY = None
@@ -26,11 +28,11 @@ class World(object):
                     playerY = y
                     self.coordList[x][y] = (255, 255, 255) #there is not actually a red block there, rather it's blank
                 else:
-                    self.coordList[x][y] = self.image.getpixel((x, y))
+                    self.coordList[x][y] = (self.image.getpixel((x, y))[0], self.image.getpixel((x, y))[1], self.image.getpixel((x, y))[2])
                     if(self.coordList[x][y] != (255, 255, 255)):
                         print("Point confirmed at ({}, {})".format(x, y))
 
-        self.player = Player(playerX, playerY)
+        self.player = Player(self, playerX, playerY)
         print("Player created at ({}, {})".format(playerX, playerY))
 
 
@@ -72,12 +74,20 @@ class World(object):
 
 class Player(object):
     #angle measurements are in radians
-    angle = math.pi/3
+    angle = 0
     FOV = math.pi/2
 
-    def __init__(self, x, y):
+    def __init__(self, world, x, y):
         self.x = x
         self.y = y
+        self.world = world
+
+    def collisionCorrection(self):
+        if((self.world.getCoordAt(self.x, self.y) != (255, 255, 255) and self.world.getCoordAt(self.x, self.y) != (255, 0, 0)) or
+                   self.x > self.world.getMaxWidth() or self.y > self.world.getMaxHeight() or self.x < 0 or self.y < 0):
+            self.x = self.lastX
+            self.y = self.lastY
+
 
     def getX(self):
         return self.x
@@ -101,9 +111,11 @@ class Player(object):
         self.validateAngle()
 
     def increaseX(self, increment):
+        self.lastX = self.x
         self.x += increment
 
     def increaseY(self, increment):
+        self.lastY = self.y
         self.y += increment
 
     def getFOV(self):

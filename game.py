@@ -1,11 +1,15 @@
 import pygame
 import sys
+import random
 from world import *
 from timer import *
 from raycaster import *
+from battle import *
 
 
 class Game():
+    originalscreenX = 854
+    originalscreenY = 480
     screenX = 854
     screenY = 480
     screenRatio = 1
@@ -14,28 +18,39 @@ class Game():
     KEY_Q = False
     KEY_E = False
     KEY_W = False
+    KEY_S = False
+    songPlaying = False
+    INBATTLE = False
+    BATTLESTART = False
     def __init__(self):
         self.lastFrame = timeInMillis()
-        self.world = World("world.png", self.screenX, self.screenY)
+        self.world = World("res/world.png", self.screenX, self.screenY)
         self.caster = RayCaster(self.world)
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
+        self.nextEncounter = random.randint(0, 100)
+        self.stepsSinceEncounter = 0
 
     def start(self): #starting the game loop
         self.loop.start()
 
     def tick(self): #this gets called every time the game loops (ticks)
+        if(not self.INBATTLE):
+            if(timeInMillis() - self.lastPhysics > 100):
+                lastPhysics = timeInMillis()
+                self.movementHandler()
+
+        self.eventCatcher()
         self.caster.cast()
         self.draw()
         self.frameRate = 1000/(timeInMillis()-self.lastFrame)
         self.lastFrame = timeInMillis()
-        self.eventCatcher()
+        if(self.stepsSinceEncounter >= self.nextEncounter):
+            self.randomEncounter()
 
         #making physics (movement) not tied to framerate
         #*cough* looking at you Bethesda *cough*
-        if(timeInMillis() - self.lastPhysics > 100):
-            lastPhysics = timeInMillis()
-            self.movementHandler()
+
 
     def draw(self): #draws everything onscreen
         white = (255,255,255)
@@ -55,11 +70,30 @@ class Game():
                 pygame.draw.lines(self.screen, black, False, topPointlist, 1)
                 pygame.draw.lines(self.screen, black, False, bottomPointlist, 1)
 
-        font = pygame.font.Font(None, 20)
+        font = pygame.font.SysFont("monospace", int(self.screenX/20))
+        #battle HUD
+        if(self.BATTLESTART):
+            #displaying enemy
+            enemy = pygame.image.load(self.currentMonster.getImage())
+            enemy = pygame.transform.scale(enemy, (int(enemy.get_width()*self.screenX/self.originalscreenX), int(enemy.get_height()*self.screenY/self.originalscreenY)))
+            self.screen.blit(enemy, (self.screenX/2 - enemy.get_width()/2, self.screenY/2))
+            action = [None] * 2
+            action[0] = font.render("Fight", 1, red)
+            action[1] = font.render("Flee", 1, red)
+            for i in range(0, len(action)):
+                pygame.draw.rect(self.screen, white, (self.screenX*(3/4), self.screenY/len(action) - (action[i].get_height()*(i+1)), action[i].get_width(), action[i].get_height()))
+                self.screen.blit(action[i], (self.screenX*(3/4), self.screenY/len(action) - (action[i].get_height()*(i+1))))
+
+
+
+        #developer tools here
+        font = pygame.font.SysFont("monospace", int(self.screenX/70))
         text = font.render(self.caster.getInfo(), 1, red)
         framerate = font.render("FPS: {}".format(self.frameRate), 1, red)
+        encounter = font.render("Encounter in: {} Last encounter: {}".format(self.nextEncounter, self.stepsSinceEncounter), 1, red)
         self.screen.blit(text, (0, 0))
         self.screen.blit(framerate, (0, 20))
+        self.screen.blit(encounter, (0, 40))
 
         pygame.display.update()
 
@@ -77,9 +111,10 @@ class Game():
             self.KEY_W = pygame.key.get_pressed()[pygame.K_w]
             self.KEY_S = pygame.key.get_pressed()[pygame.K_s]
             if event.type == pygame.VIDEORESIZE:
-                print(event.dict['size'])
                 self.world.setScreenX(event.dict['size'][0])
                 self.world.setScreenY(event.dict['size'][1])
+                self.screenX = event.dict['size'][0]
+                self.screenY = event.dict['size'][1]
                 self.screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
 
     def movementHandler(self): #uses info from eventCatcher
@@ -101,9 +136,29 @@ class Game():
         if self.KEY_W:
             self.world.getPlayer().increaseX(xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(yDir*math.fabs(math.sin(currentAngle)*0.1))
+            self.world.getPlayer().collisionCorrection()
+            self.stepsSinceEncounter += 1
         elif self.KEY_S:
             self.world.getPlayer().increaseX(-xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(-yDir*math.fabs(math.sin(currentAngle)*0.1))
+            self.world.getPlayer().collisionCorrection()
+            self.stepsSinceEncounter += 1
+
+    def randomEncounter(self):
+        if(self.caster.getColumn(int(self.screenX/2)) < 2):
+            self.BATTLESTART = False
+            self.world.getPlayer().increaseAngle(0.1)
+        else:
+            self.BATTLESTART = True
+        if(not self.songPlaying):
+            self.songPlaying = True
+            self.playSong()
+            self.currentMonster = Monster("res/mettatonEX.gif", (25, 5))
+        self.INBATTLE = True
+
+    def playSong(self):
+        pygame.mixer.music.load('res/undertale.mp3')
+        pygame.mixer.music.play(-1)
 
 
 

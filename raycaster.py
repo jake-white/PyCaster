@@ -12,6 +12,7 @@ class RayCaster(object):
     def cast(self):
         self.columns = [None] * self.world.getScreenX()
         self.colors = [None] * self.world.getScreenX()
+        self.columnHeight = [1] * self.world.getScreenX()
         #defining some stuff to make this easier and not call 12 thousand functions every line
         screenX = self.world.getScreenX()
         angleIncrement = self.getPlayer().getFOV()/screenX
@@ -55,7 +56,7 @@ class RayCaster(object):
                     checkY = currentY
                 else:
                     checkY = currentY - 1
-                if currentX > maxX or currentY > maxY or currentX < 0 or currentY < 0:
+                if checkX > maxX or checkY > maxY or checkX < 0 or checkY < 0:
                     distanceX = -1
                     hit = True
                 elif self.world.getCoordAt(checkX, checkY) != (255, 255, 255):
@@ -95,7 +96,7 @@ class RayCaster(object):
                     checkX = currentX
                 else:
                     checkX = currentX - 1
-                if currentX > maxX or currentY > maxY or currentX < 0 or currentY < 0:
+                if checkX > maxX or checkY > maxY or checkX < 0 or checkY < 0:
                     distanceY = -1
                     hit = True
                 elif self.world.getCoordAt(checkX, checkY) != (255, 255, 255):
