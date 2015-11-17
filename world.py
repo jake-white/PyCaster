@@ -76,6 +76,7 @@ class Player(object):
     #angle measurements are in radians
     angle = 0
     FOV = math.pi/2
+    hp = 25
 
     def __init__(self, world, x, y):
         self.x = x

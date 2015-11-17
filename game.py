@@ -74,7 +74,7 @@ class Game():
         #battle HUD
         if(self.BATTLESTART):
             #displaying enemy
-            enemy = pygame.image.load(self.currentMonster.getImage())
+            enemy = pygame.image.load(self.battle.getMonster().getImage())
             enemy = pygame.transform.scale(enemy, (int(enemy.get_width()*self.screenX/self.originalscreenX), int(enemy.get_height()*self.screenY/self.originalscreenY)))
             self.screen.blit(enemy, (self.screenX/2 - enemy.get_width()/2, self.screenY/2))
             action = [None] * 2
@@ -116,6 +116,9 @@ class Game():
                 self.screenX = event.dict['size'][0]
                 self.screenY = event.dict['size'][1]
                 self.screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
+            if(pygame.key.get_pressed()[pygame.K_1]):
+                if(self.BATTLESTART):
+                    self.battle.action(1)
 
     def movementHandler(self): #uses info from eventCatcher
         currentAngle = self.world.getPlayer().getAngle()
@@ -150,16 +153,8 @@ class Game():
             self.world.getPlayer().increaseAngle(0.1)
         else:
             self.BATTLESTART = True
-        if(not self.songPlaying):
-            self.songPlaying = True
-            self.playSong()
-            self.currentMonster = Monster("res/mettatonEX.gif", (25, 5))
+            self.battle = Battle(self.world.getPlayer())
         self.INBATTLE = True
-
-    def playSong(self):
-        pygame.mixer.music.load('res/undertale.mp3')
-        pygame.mixer.music.play(-1)
-
 
 
 
