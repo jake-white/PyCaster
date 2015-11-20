@@ -45,7 +45,7 @@ class Game():
         self.draw()
         self.frameRate = 1000/(timeInMillis()-self.lastFrame)
         self.lastFrame = timeInMillis()
-        if(self.stepsSinceEncounter >= self.nextEncounter):
+        """if(self.stepsSinceEncounter >= self.nextEncounter):
             if(self.caster.getColumn(int(self.screenX/2)) < 2):
                 self.BATTLESTART = False
                 self.world.getPlayer().increaseAngle(0.1)
@@ -54,7 +54,7 @@ class Game():
                 self.BATTLESTART = True
                 self.stepsSinceEncounter = 0
                 self.nextEncounter = random.randint(0, 100)
-            self.INBATTLE = True
+            self.INBATTLE = True"""
 
         #making physics (movement) not tied to framerate
         #*cough* looking at you Bethesda *cough*

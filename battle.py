@@ -11,6 +11,12 @@ class Monster():
     def getName(self):
         return self.stats[0]
 
+    def getHP(self):
+        return self.stats[1]
+
+    def getAttack(self):
+        return self.stats[2]
+
     def getType(self):
         return self.stats[3]
 
