@@ -2,7 +2,7 @@ import math
 
 
 class RayCaster(object):
-    lightingConstant = 5
+    lightingConstant = 1
     def __init__(self, world):
         self.world = world
         #columns of the screen
