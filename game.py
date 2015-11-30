@@ -31,7 +31,7 @@ class Game():
         self.config = Config("configs/gameconfig.txt")
         self.lastFrame = timeInMillis()
         self.world = World(self.config.getElement("worldname"), self.screenX, self.screenY)
-        self.caster = RayCaster(self.world)
+        self.caster = RayCaster(self.world, int(self.config.getElement("light")))
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
         self.nextEncounter = random.randint(0, 100)
@@ -70,7 +70,7 @@ class Game():
         white = (255,255,255)
         red = (255,0,0)
         black = (0,0,0)
-        darkness = 100
+        darkness = int(self.config.getElement("light"))*20
         screenY = self.world.getScreenY()
 
         #background

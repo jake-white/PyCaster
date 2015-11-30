@@ -1,7 +1,7 @@
 import pygame
 
 class Monster():
-    def __init__(self, filename, stats):
+    def __init__(self, filename, stats, type):
         self.stats = stats #(name, hp, attack, type)
         self.filename = filename
 
@@ -24,7 +24,7 @@ class Battle():
     songPlaying = False
     def __init__(self, player, game):
         self.actionList = [["Wave Torch", self.torch], ["Flee", self.flee]]
-        self.currentMonster = Monster("res/mettatonEX.gif", ("Mettaton", 25, 5, "random"))
+        self.currentMonster = Monster("res/mettatonEX.gif", ("Mettaton", 25, 5, "random"), "normal")
         self.player = player
         self.game = game
         if(not self.songPlaying):
@@ -45,7 +45,10 @@ class Battle():
 
     def playSong(self):
         print("Playing undertale music.")
-        pygame.mixer.music.load('res/undertale.mp3')
+        if(self.currentMonster.getType() == "boss"):
+            pygame.mixer.music.load(self.game.config.getElement("boss_music"))
+        else:
+            pygame.mixer.music.load(self.game.config.getElement("battle_music"))
         pygame.mixer.music.play(-1)
 
     def stopSong(self):

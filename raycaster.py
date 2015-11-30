@@ -2,9 +2,9 @@ import math
 
 
 class RayCaster(object):
-    lightingConstant = 5
-    def __init__(self, world):
+    def __init__(self, world, light):
         self.world = world
+        self.light = light
         #columns of the screen
         #value = distance, None = nomath.tan there
 
@@ -122,7 +122,7 @@ class RayCaster(object):
             if(self.columns[i] == 0):
                 #don't wanna divide by zero
                 self.columns[i] = 0.1
-            intensity = 1/self.columns[i] * self.lightingConstant
+            intensity = 1/self.columns[i] * self.light
             if(intensity > 1):
                 intensity = 1
             self.colors[i] = (self.colors[i][0] * intensity, self.colors[i][1] * intensity, self.colors[i][2] * intensity)

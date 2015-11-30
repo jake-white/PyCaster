@@ -1,10 +1,19 @@
 #This config is for general game settings.
 #Follow this format('#' signs are reserved for lines to not be parsed):
 #element=value
+
+#World/Rendering
 worldname=res/world.png
+light=2
+
+#Controls
 forwards=w
 backwards=s
 left=q
 right=e
 strafe_left=a
 strafe_right=d
+
+#Music
+battle_music=res/battle.mp3
+boss_music=res/mettaton.mp3
