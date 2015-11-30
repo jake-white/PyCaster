@@ -19,6 +19,8 @@ class Game():
     KEY_E = False
     KEY_W = False
     KEY_S = False
+    KEY_A = False
+    KEY_D = False
     songPlaying = False
     INBATTLE = False
     BATTLESTART = False
@@ -71,7 +73,6 @@ class Game():
         for i in range(1, int(self.screenY/2)):
             intensity = darkness/(self.screenY/2) * i
             backColor = (darkness-intensity, darkness-intensity, darkness-intensity)
-            print(backColor)
             pygame.draw.line(self.screen, backColor, (0, i), (self.screenX, i), 10)
             pygame.draw.line(self.screen, backColor, (0, self.screenY - i), (self.screenX, self.screenY - i), 10)
 
@@ -96,7 +97,7 @@ class Game():
             enemy = pygame.transform.scale(enemy, (int(enemy.get_width()*self.screenX/self.originalscreenX), int(enemy.get_height()*self.screenY/self.originalscreenY)))
             self.screen.blit(enemy, (self.screenX/2 - enemy.get_width()/2, self.screenY/2))
             actionList = self.battle.getActionList()
-            for i in range(0, len(self.battle.getActionList())):
+            for i in range(0, len(self.battle.getSActionList())):
                 actionText = font.render(self.battle.getActionList()[i][0], 1, red)
                 pygame.draw.rect(self.screen, white, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2, actionText.get_width(), actionText.get_height()))
                 self.screen.blit(actionText, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2))
@@ -165,6 +166,27 @@ class Game():
         elif self.KEY_S:
             self.world.getPlayer().increaseX(-xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(-yDir*math.fabs(math.sin(currentAngle)*0.1))
+            self.world.getPlayer().collisionCorrection()
+            self.stepsSinceEncounter += 1
+        currentAngle += math.pi/2
+        posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
+        posDirY = currentAngle > math.pi
+        if(posDirX):
+            xDir = 1
+        else:
+            xDir = -1
+        if(posDirY):
+            yDir = 1
+        else:
+            yDir = -1
+        if self.KEY_A:
+            self.world.getPlayer().increaseX(xDir * math.fabs(math.cos(currentAngle)*0.1))
+            self.world.getPlayer().increaseY(yDir * math.fabs(math.sin(currentAngle)*0.1))
+            self.world.getPlayer().collisionCorrection()
+            self.stepsSinceEncounter += 1
+        if self.KEY_D:
+            self.world.getPlayer().increaseX(-xDir * math.fabs(math.cos(currentAngle)*0.1))
+            self.world.getPlayer().increaseY(-yDir * math.fabs(math.sin(currentAngle)*0.1))
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
 

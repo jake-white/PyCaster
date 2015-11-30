@@ -1,5 +1,5 @@
 import math
-from PIL import Image
+import pygame
 
 
 class World(object):
@@ -13,24 +13,23 @@ class World(object):
 
 
     def readImage(self, worldname):
-        self.image = Image.open(worldname).convert('RGB')
-        self.width = self.image.size[0]
-        self.height = self.image.size[1]
-        self.coordList = [[(0, 0, 0) for _ in range(self.height)] for _ in range(self.width)]
+        self.image = pygame.image.load(worldname)
+        print("size = {}".format(self.image.get_size()))
+        self.width = self.image.get_size()[0]
+        self.height = self.image.get_size()[1]
+        self.coordList = [[(255, 255, 255, 255) for _ in range(self.height)] for _ in range(self.width)]
         self.coordHeight = [[1 for _ in range(self.height)] for _ in range(self.width)]
-        print("world.png is {}x{}".format(self.width, self.height))
+        print("{} is {}x{}".format(worldname, self.width, self.height))
         playerX = None
         playerY = None
         for x in range (0, self.width):
             for y in range(0, self.height):
-                if self.image.getpixel((x, y)) == (255, 0, 0) and playerX == None:
+                if self.image.get_at((x, y)) == (255, 0, 0, 255) and playerX == None:
                     playerX = x
                     playerY = y
                     self.coordList[x][y] = (255, 255, 255) #there is not actually a red block there, rather it's blank
                 else:
-                    self.coordList[x][y] = (self.image.getpixel((x, y))[0], self.image.getpixel((x, y))[1], self.image.getpixel((x, y))[2])
-                    if(self.coordList[x][y] != (255, 255, 255)):
-                        print("Point confirmed at ({}, {})".format(x, y))
+                    self.coordList[x][y] = (self.image.get_at((x, y))[0], self.image.get_at((x, y))[1], self.image.get_at((x, y))[2])
 
         self.player = Player(self, playerX, playerY)
         print("Player created at ({}, {})".format(playerX, playerY))
