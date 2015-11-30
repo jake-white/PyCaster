@@ -1,6 +1,8 @@
-import pygame
 import sys
 import random
+
+import pygame
+
 from world import *
 from timer import *
 from raycaster import *

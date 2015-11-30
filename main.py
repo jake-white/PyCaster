@@ -3,8 +3,6 @@
     PyCaster is a raycasting engine designed to
     display 2D maps in a pseudo-3D fashion.
 """
-import sys
-import pygame
 from game import *
 
 
