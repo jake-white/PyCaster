@@ -7,6 +7,7 @@ from world import *
 from timer import *
 from raycaster import *
 from battle import *
+from config import *
 
 
 class Game():
@@ -17,18 +18,19 @@ class Game():
     screenRatio = 1
     frameRate = 0
     lastPhysics = 0
-    KEY_Q = False
-    KEY_E = False
-    KEY_W = False
-    KEY_S = False
-    KEY_A = False
-    KEY_D = False
+    KEY_LEFT = False
+    KEY_RIGHT = False
+    KEY_FORWARDS = False
+    KEY_BACKWARDS = False
+    KEY_STRAFE_LEFT = False
+    KEY_STRAFE_RIGHT = False
     songPlaying = False
     INBATTLE = False
     BATTLESTART = False
     def __init__(self):
+        self.config = Config("configs/gameconfig.txt")
         self.lastFrame = timeInMillis()
-        self.world = World("res/world.png", self.screenX, self.screenY)
+        self.world = World(self.config.getElement("worldname"), self.screenX, self.screenY)
         self.caster = RayCaster(self.world)
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
@@ -49,7 +51,7 @@ class Game():
         self.draw()
         self.frameRate = 1000/(timeInMillis()-self.lastFrame)
         self.lastFrame = timeInMillis()
-        """if(self.stepsSinceEncounter >= self.nextEncounter):
+        if(self.stepsSinceEncounter >= self.nextEncounter):
             if(self.caster.getColumn(int(self.screenX/2)) < 2):
                 self.BATTLESTART = False
                 self.world.getPlayer().increaseAngle(0.1)
@@ -58,7 +60,7 @@ class Game():
                 self.BATTLESTART = True
                 self.stepsSinceEncounter = 0
                 self.nextEncounter = random.randint(0, 100)
-            self.INBATTLE = True"""
+            self.INBATTLE = True
 
         #making physics (movement) not tied to framerate
         #*cough* looking at you Bethesda *cough*
@@ -99,7 +101,7 @@ class Game():
             enemy = pygame.transform.scale(enemy, (int(enemy.get_width()*self.screenX/self.originalscreenX), int(enemy.get_height()*self.screenY/self.originalscreenY)))
             self.screen.blit(enemy, (self.screenX/2 - enemy.get_width()/2, self.screenY/2))
             actionList = self.battle.getActionList()
-            for i in range(0, len(self.battle.getSActionList())):
+            for i in range(0, len(self.battle.getActionList())):
                 actionText = font.render(self.battle.getActionList()[i][0], 1, red)
                 pygame.draw.rect(self.screen, white, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2, actionText.get_width(), actionText.get_height()))
                 self.screen.blit(actionText, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2))
@@ -124,12 +126,14 @@ class Game():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            self.KEY_Q  = pygame.key.get_pressed()[pygame.K_q]
-            self.KEY_E = pygame.key.get_pressed()[pygame.K_e]
-            self.KEY_A = pygame.key.get_pressed()[pygame.K_a]
-            self.KEY_D = pygame.key.get_pressed()[pygame.K_d]
-            self.KEY_W = pygame.key.get_pressed()[pygame.K_w]
-            self.KEY_S = pygame.key.get_pressed()[pygame.K_s]
+            key = "pygame.K_" + self.config.getElement("left")
+            print(eval(key))
+            self.KEY_LEFT  = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("left"))]
+            self.KEY_RIGHT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("right"))]
+            self.KEY_STRAFE_LEFT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("strafe_left"))]
+            self.KEY_STRAFE_RIGHT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("strafe_right"))]
+            self.KEY_FORWARDS = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("forwards"))]
+            self.KEY_BACKWARDS = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("backwards"))]
             if event.type == pygame.VIDEORESIZE:
                 self.world.setScreenX(event.dict['size'][0])
                 self.world.setScreenY(event.dict['size'][1])
@@ -156,21 +160,22 @@ class Game():
             yDir = 1
         else:
             yDir = -1
-        if self.KEY_Q:
+        if self.KEY_LEFT:
             self.world.getPlayer().increaseAngle(0.1)
-        elif self.KEY_E:
+        elif self.KEY_RIGHT:
             self.world.getPlayer().increaseAngle(-0.1)
-        if self.KEY_W:
+        if self.KEY_FORWARDS:
             self.world.getPlayer().increaseX(xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(yDir*math.fabs(math.sin(currentAngle)*0.1))
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
-        elif self.KEY_S:
+        elif self.KEY_BACKWARDS:
             self.world.getPlayer().increaseX(-xDir*math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(-yDir*math.fabs(math.sin(currentAngle)*0.1))
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
-        currentAngle += math.pi/2
+        currentAngle -= math.pi/2
+        currentAngle = validateAngle(currentAngle)
         posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi
         posDirY = currentAngle > math.pi
         if(posDirX):
@@ -181,14 +186,14 @@ class Game():
             yDir = 1
         else:
             yDir = -1
-        if self.KEY_A:
-            self.world.getPlayer().increaseX(xDir * math.fabs(math.cos(currentAngle)*0.1))
-            self.world.getPlayer().increaseY(yDir * math.fabs(math.sin(currentAngle)*0.1))
-            self.world.getPlayer().collisionCorrection()
-            self.stepsSinceEncounter += 1
-        if self.KEY_D:
+        if self.KEY_STRAFE_LEFT:
             self.world.getPlayer().increaseX(-xDir * math.fabs(math.cos(currentAngle)*0.1))
             self.world.getPlayer().increaseY(-yDir * math.fabs(math.sin(currentAngle)*0.1))
+            self.world.getPlayer().collisionCorrection()
+            self.stepsSinceEncounter += 1
+        if self.KEY_STRAFE_RIGHT:
+            self.world.getPlayer().increaseX(xDir * math.fabs(math.cos(currentAngle)*0.1))
+            self.world.getPlayer().increaseY(yDir * math.fabs(math.sin(currentAngle)*0.1))
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
 
@@ -200,3 +205,11 @@ def configureScreen(screenX, screenY):
 
 def timeInMillis():
     return time.time() * 1000
+
+def validateAngle(angle):
+        #ensures the current angle is between 0 and 2pi
+        while angle >= 2*math.pi:
+            angle -= 2*math.pi
+        while angle < 0:
+            angle += 2*math.pi
+        return angle

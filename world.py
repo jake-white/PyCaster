@@ -9,6 +9,7 @@ class World(object):
         object.__init__(self)
         self.screenX = screenX
         self.screenY = screenY
+        print(worldname)
         self.readImage(worldname)
 
 

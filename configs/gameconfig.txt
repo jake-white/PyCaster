@@ -1,0 +1,10 @@
+#This config is for general game settings.
+#Follow this format('#' signs are reserved for lines to not be parsed):
+#element=value
+worldname=res/world.png
+forwards=w
+backwards=s
+left=q
+right=e
+strafe_left=a
+strafe_right=d
