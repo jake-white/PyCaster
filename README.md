@@ -1,6 +1,10 @@
 # PyCaster
-This is a raycasting tool that will display 2D coordinate maps in pseudo-3D using raycasting.
-It is under development for the CSCI 23000 final project.
+This is a raycasting tool that will display 2D coordinate maps in pseudo-3D using raycasting and can be used to create games including custom maps, enemies, music, settings, etc.
+
+It is currently under development for the CSCI 23000 final project.
+
+#Documentation
+The PyCaster documentation is available at http://jake-white.github.io/PyCaster/docs/
 
 # Installation Instructions
 To use this program, you will need to install pygame (gaming/drawing engine), which can be found in the lib folder of this project (32/64-bit files were both included).  If you're not using Python 3.5, you will probably need to download the correct version of it yourself.
