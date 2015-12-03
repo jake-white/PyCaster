@@ -4,7 +4,7 @@
 
 #World/Rendering
 worldname=res/world.png
-light=2
+light=5
 
 #Controls
 forwards=w
@@ -17,3 +17,8 @@ strafe_right=d
 #Music
 battle_music=res/battle.mp3
 boss_music=res/mettaton.mp3
+
+#Player
+angle=0
+FOV=math.pi/2
+HP=25

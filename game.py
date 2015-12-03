@@ -30,7 +30,7 @@ class Game():
     def __init__(self):
         self.config = Config("configs/gameconfig.txt")
         self.lastFrame = timeInMillis()
-        self.world = World(self.config.getElement("worldname"), self.screenX, self.screenY)
+        self.world = World(self.config.getElement("worldname"), self.config, self.screenX, self.screenY)
         self.caster = RayCaster(self.world, int(self.config.getElement("light")))
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)

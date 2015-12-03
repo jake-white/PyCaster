@@ -4,11 +4,12 @@ import pygame
 
 class World(object):
 
-    def __init__(self, worldname, screenX, screenY):
+    def __init__(self, worldname, config, screenX, screenY):
         print("creating new world")
         object.__init__(self)
         self.screenX = screenX
         self.screenY = screenY
+        self.config = config
         print(worldname)
         self.readImage(worldname)
 
@@ -32,7 +33,7 @@ class World(object):
                 else:
                     self.coordList[x][y] = (self.image.get_at((x, y))[0], self.image.get_at((x, y))[1], self.image.get_at((x, y))[2])
 
-        self.player = Player(self, playerX, playerY)
+        self.player = Player(self.config, self, playerX, playerY)
         print("Player created at ({}, {})".format(playerX, playerY))
 
 
@@ -78,10 +79,14 @@ class Player(object):
     FOV = math.pi/2
     hp = 25
 
-    def __init__(self, world, x, y):
+    def __init__(self, config, world, x, y):
         self.x = x
         self.y = y
         self.world = world
+        self.config = config
+        self.angle = eval(self.config.getElement("angle"))
+        self.FOV = eval(self.config.getElement("FOV"))
+        self.hp = self.config.getElement("HP")
 
     def collisionCorrection(self):
         if((self.world.getCoordAt(self.x, self.y) != (255, 255, 255) and self.world.getCoordAt(self.x, self.y) != (255, 0, 0)) or
