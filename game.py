@@ -90,8 +90,9 @@ class Game():
                 pygame.draw.lines(self.screen, black, False, topPointlist, 1)
                 pygame.draw.lines(self.screen, black, False, bottomPointlist, 1)
 
-        torch = pygame.image.load("res/torch.png")
-        self.screen.blit(torch, (self.screenX - torch.get_width(), self.screenY - torch.get_height()))
+        hand_sprite = pygame.image.load(self.config.getElement("hand_sprite"))
+        self.screen.blit(hand_sprite, (self.screenX - hand_sprite.get_width(), self.screenY - hand_sprite.get_height()))
+
 
         font = pygame.font.SysFont("monospace", int(self.screenX/20))
         #battle HUD
@@ -105,6 +106,11 @@ class Game():
                 actionText = font.render(self.battle.getActionList()[i][0], 1, red)
                 pygame.draw.rect(self.screen, white, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2, actionText.get_width(), actionText.get_height()))
                 self.screen.blit(actionText, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2))
+            #print(self.battle.getConsole())
+            consoleText = font.render(self.battle.getConsole(), 1, red)
+            self.screen.blit(consoleText, (self.screenX/2 - consoleText.get_width()/2, consoleText.get_height()))
+            #print("{}, {}".format(self.screenX/2 - consoleText.get_width()/2,  consoleText.get_height()))
+            #print(consoleText)
 
 
 
@@ -127,7 +133,6 @@ class Game():
                 pygame.quit()
                 sys.exit()
             key = "pygame.K_" + self.config.getElement("left")
-            print(eval(key))
             self.KEY_LEFT  = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("left"))]
             self.KEY_RIGHT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("right"))]
             self.KEY_STRAFE_LEFT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("strafe_left"))]

@@ -78,6 +78,7 @@ class Player(object):
     angle = 0
     FOV = math.pi/2
     hp = 25
+    attack = 5
 
     def __init__(self, config, world, x, y):
         self.x = x
@@ -126,3 +127,6 @@ class Player(object):
 
     def getFOV(self):
         return self.FOV
+
+    def getAttack(self):
+        return self.attack
