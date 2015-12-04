@@ -18,6 +18,8 @@ class Game():
     screenRatio = 1
     frameRate = 0
     lastPhysics = 0
+    actionFrame = 0
+    responseFrame = 0
     KEY_LEFT = False
     KEY_RIGHT = False
     KEY_FORWARDS = False
@@ -27,6 +29,7 @@ class Game():
     songPlaying = False
     INBATTLE = False
     BATTLESTART = False
+    devtools = False
     def __init__(self):
         self.config = Config("configs/gameconfig.txt")
         self.lastFrame = timeInMillis()
@@ -36,13 +39,14 @@ class Game():
         self.screen = configureScreen(self.screenX, self.screenY)
         self.nextEncounter = random.randint(0, 100)
         self.stepsSinceEncounter = 0
+        self.devtools = eval(self.config.getElement("devtools"))
 
     def start(self): #starting the game loop
         self.loop.start()
 
     def tick(self): #this gets called every time the game loops (ticks)
         if(not self.INBATTLE):
-            if(timeInMillis() - self.lastPhysics > 100):
+            if(timeInMillis() - self.lastPhysics > 200):
                 lastPhysics = timeInMillis()
                 self.movementHandler()
 
@@ -82,10 +86,13 @@ class Game():
 
         for i in range(0, len(self.caster.getColumnList())):
             if self.caster.getColumn(i) != None:
-                columnHeight = screenY/self.caster.getColumn(i)
-                pointlist = [(i, screenY/2 - columnHeight/2), (i, screenY/2 + columnHeight/2)]
-                topPointlist = [(i, screenY/2 - columnHeight/2), (i, screenY/2 - columnHeight/2)]
-                bottomPointlist = [(i, screenY/2 + columnHeight/2), (i, screenY/2 + columnHeight/2)]
+                if(self.caster.getColumn(i) > 0.1):
+                    columnHeight = screenY/self.caster.getColumn(i)
+                else:
+                    columnHeight = screenY
+                pointlist = [(i, int(screenY/2 - columnHeight/2)), (i, int(screenY/2 + columnHeight/2))]
+                topPointlist = [(i, int(screenY/2 - columnHeight/2)), (i, int(screenY/2 - columnHeight/2))]
+                bottomPointlist = [(i, int(screenY/2 + columnHeight/2)), (i, int(screenY/2 + columnHeight/2))]
                 pygame.draw.lines(self.screen, self.caster.getColor(i), False, pointlist, 1)
                 pygame.draw.lines(self.screen, black, False, topPointlist, 1)
                 pygame.draw.lines(self.screen, black, False, bottomPointlist, 1)
@@ -95,6 +102,7 @@ class Game():
 
 
         font = pygame.font.SysFont("monospace", int(self.screenX/20))
+        consoleFont = pygame.font.SysFont("monospace", int(self.screenX/50))
         #battle HUD
         if(self.BATTLESTART):
             #displaying enemy
@@ -106,22 +114,30 @@ class Game():
                 actionText = font.render(self.battle.getActionList()[i][0], 1, red)
                 pygame.draw.rect(self.screen, white, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2, actionText.get_width(), actionText.get_height()))
                 self.screen.blit(actionText, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2))
-            #print(self.battle.getConsole())
-            consoleText = font.render(self.battle.getConsole(), 1, red)
-            self.screen.blit(consoleText, (self.screenX/2 - consoleText.get_width()/2, consoleText.get_height()))
-            #print("{}, {}".format(self.screenX/2 - consoleText.get_width()/2,  consoleText.get_height()))
-            #print(consoleText)
+            if(self.battle.getActionConsole() == ""):
+                self.actionFrame = 0
+                self.responseFrame = 0
+            else:
+                if(len(self.battle.getActionConsole()) > self.actionFrame):
+                    self.actionFrame += 2
+                elif(len(self.battle.getResponseConsole()) > self.responseFrame):
+                    self.responseFrame += 2
+                actionText = consoleFont.render(self.battle.getActionConsole()[:self.actionFrame], 1, red)
+                responseText = consoleFont.render(self.battle.getResponseConsole()[:self.responseFrame], 1, red)
+                self.screen.blit(actionText, (self.screenX/2 - actionText.get_width()/2, actionText.get_height()))
+                self.screen.blit(responseText, (self.screenX/2 - responseText.get_width()/2, responseText.get_height() + actionText.get_height()))
 
 
 
         #developer tools here
-        font = pygame.font.SysFont("monospace", int(self.screenX/70))
-        text = font.render(self.caster.getInfo(), 1, red)
-        framerate = font.render("FPS: {}".format(self.frameRate), 1, red)
-        encounter = font.render("Encounter in: {} Last encounter: {}".format(self.nextEncounter, self.stepsSinceEncounter), 1, red)
-        self.screen.blit(text, (0, 0))
-        self.screen.blit(framerate, (0, 20))
-        self.screen.blit(encounter, (0, 40))
+        if(self.devtools):
+            font = pygame.font.SysFont("monospace", int(self.screenX/70))
+            text = font.render(self.caster.getInfo(), 1, red)
+            framerate = font.render("FPS: {}".format(self.frameRate), 1, red)
+            encounter = font.render("Encounter in: {} Last encounter: {}".format(self.nextEncounter, self.stepsSinceEncounter), 1, red)
+            self.screen.blit(text, (0, 0))
+            self.screen.blit(framerate, (0, 20))
+            self.screen.blit(encounter, (0, 40))
 
         pygame.display.update()
 
@@ -201,6 +217,11 @@ class Game():
             self.world.getPlayer().increaseY(yDir * math.fabs(math.sin(currentAngle)*0.1))
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
+
+    def clearAnimation(self):
+        self.actionFrame = 0
+        self.responseFrame = 0
+
 
 def configureScreen(screenX, screenY):
     pygame.init()

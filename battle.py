@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 
 class Monster():
     def __init__(self, filename, stats, type):
@@ -14,18 +14,29 @@ class Monster():
     def getHP(self):
         return self.stats[1]
 
+    def getAlive(self):
+        return self.stats[1] > 0
+
     def getAttack(self):
-        return self.stats[2]
+        return int(self.stats[2])
 
     def getType(self):
         return self.stats[3]
 
+    def damage(self, dmg):
+        self.stats[1] -= dmg
+        if(self.stats[1] < 0):
+            self.stats[1] = 0
+
 class Battle():
     songPlaying = False
-    console = ""
+    actionConsole = ""
+    responseConsole = ""
+    actionTimeLimit = 1000
+    lastAction = 0
     def __init__(self, player, game):
         self.actionList = [["Attack", self.attack], ["Flee", self.flee]]
-        self.currentMonster = Monster("res/mettatonEX.gif", ("Mettaton", 25, 5, "random"), "normal")
+        self.currentMonster = Monster("res/mettatonEX.gif", ["Mettaton", 25, 5, "random"], "normal")
         self.player = player
         self.game = game
         if(not self.songPlaying):
@@ -41,8 +52,11 @@ class Battle():
         self.stopSong()
 
     def action(self, actionNumber):
-        self.console = ""
-        self.actionList[actionNumber][1]()
+        if(timeInMillis() - self.lastAction > self.actionTimeLimit):
+            self.actionConsole = ""
+            self.responseConsole = ""
+            self.game.clearAnimation()
+            self.actionList[actionNumber][1]()
 
     def playSong(self):
         if(self.currentMonster.getType() == "boss"):
@@ -59,14 +73,37 @@ class Battle():
 
     def attack(self):
         print("attacking")
-        self.console = self.console.join("You wave the torch at {}.".format(self.currentMonster.getName()), "\n")
-        self.console = self.console.join("The fires burns the foe and deals {} damage.".format(self.player.getAttack()), "\n")
-        print(self.console)
+        self.actionConsole = self.actionConsole + ("You wave the torch at {}. ".format(self.currentMonster.getName()))
+        damage = self.player.getAttack()
+        self.actionConsole = self.actionConsole + ("The fires burns the foe and deals {} damage. ".format(damage))
+        self.currentMonster.damage(damage)
+        if(self.currentMonster.getAlive()):
+            monsterDamage = self.currentMonster.getAttack()
+            self.player.damage(monsterDamage)
+            self.responseConsole = self.responseConsole + ("The enemy deals {} damage in return.".format(monsterDamage))
+        #using a different channel so both sounds can play simultaneously
+        hit = pygame.mixer.Sound(self.game.config.getElement("hit_sound"))
+        pygame.mixer.find_channel().queue(hit)
+        self.checkEndCondition()
+
+
+
+        self.lastAction = timeInMillis()
 
 
     def flee(self):
         if(self.currentMonster.getType() != "boss"):
             self.end()
 
-    def getConsole(self):
-        return self.console
+    def getActionConsole(self):
+        return self.actionConsole
+
+    def getResponseConsole(self):
+        return self.responseConsole
+
+    def checkEndCondition(self):
+        if(not self.currentMonster.getAlive() or not self.player.getAlive()):
+            self.end()
+
+def timeInMillis():
+    return time.time() * 1000

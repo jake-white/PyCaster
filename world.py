@@ -87,7 +87,7 @@ class Player(object):
         self.config = config
         self.angle = eval(self.config.getElement("angle"))
         self.FOV = eval(self.config.getElement("FOV"))
-        self.hp = self.config.getElement("HP")
+        self.hp = int(self.config.getElement("HP"))
 
     def collisionCorrection(self):
         if((self.world.getCoordAt(self.x, self.y) != (255, 255, 255) and self.world.getCoordAt(self.x, self.y) != (255, 0, 0)) or
@@ -130,3 +130,11 @@ class Player(object):
 
     def getAttack(self):
         return self.attack
+
+    def damage(self, dmg):
+        self.hp -= dmg
+        if(self.hp < 0):
+            self.hp = 0
+
+    def getAlive(self):
+        return self.hp > 0

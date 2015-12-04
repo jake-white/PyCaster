@@ -2,6 +2,9 @@
 #Follow this format('#' signs are reserved for lines to not be parsed):
 #element=value
 
+#Developer Tools
+devtools=False
+
 #World/Rendering
 worldname=res/world.png
 light=5
@@ -17,6 +20,7 @@ strafe_right=d
 #Music
 battle_music=res/battle.mp3
 boss_music=res/mettaton.mp3
+hit_sound=res/hit_sound.wav
 
 #Player
 angle=0
