@@ -55,12 +55,18 @@ class Game():
         self.draw()
         self.frameRate = 1000/(timeInMillis()-self.lastFrame)
         self.lastFrame = timeInMillis()
-        if(self.stepsSinceEncounter >= self.nextEncounter):
+        #print("{}, {} vs {}, {}".format(int(self.world.getPlayer().getX()), int(self.world.getPlayer().getY()), self.world.getBossX(), self.world.getBossY()))
+        if((not self.BATTLESTART) and int(self.world.getPlayer().getX()) == self.world.getBossX() and int(self.world.getPlayer().getY()) == self.world.getBossY()):
+            self.battle = Battle(self.world.getPlayer(), self, "boss")
+            self.BATTLESTART = True
+            self.INBATTLE = True
+            print("starting bossfight")
+        elif(self.stepsSinceEncounter >= self.nextEncounter):
             if(self.caster.getColumn(int(self.screenX/2)) < 2):
                 self.BATTLESTART = False
                 self.world.getPlayer().increaseAngle(0.1)
             else:
-                self.battle = Battle(self.world.getPlayer(), self)
+                self.battle = Battle(self.world.getPlayer(), self, "normal")
                 self.BATTLESTART = True
                 self.stepsSinceEncounter = 0
                 self.nextEncounter = random.randint(0, 100)
@@ -148,8 +154,6 @@ class Game():
                 responseText = consoleFont.render(self.battle.getResponseConsole()[:self.responseFrame], 1, red)
                 self.screen.blit(actionText, (self.screenX/2 - actionText.get_width()/2, actionText.get_height()))
                 self.screen.blit(responseText, (self.screenX/2 - responseText.get_width()/2, responseText.get_height() + actionText.get_height()))
-
-
 
         #developer tools here
         if(self.devtools):

@@ -122,7 +122,10 @@ class RayCaster(object):
             if(self.columns[i] == 0):
                 #don't wanna divide by zero
                 self.columns[i] = 0.1
-            intensity = 1/self.columns[i] * self.light
+            if(self.columns[i] != None):
+                intensity = 1/self.columns[i] * self.light
+            else:
+                intensity = 1
             if(intensity > 1):
                 intensity = 1
             self.colors[i] = (self.colors[i][0] * intensity, self.colors[i][1] * intensity, self.colors[i][2] * intensity)

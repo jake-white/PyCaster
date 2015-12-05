@@ -30,7 +30,7 @@ HP=25
 hand_sprite=res/torch.png
 
 #Battles
-min_encounter_steps=50
-max_encounter_steps=100
+min_encounter_steps=1000
+max_encounter_steps=10000
 action1=Attack
 action2=Flee

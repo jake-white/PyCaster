@@ -6,7 +6,7 @@
 #The first boss type listed here will be accessible via stepping on the boss tile
 
 #"res/mettatonEX.png", ["Mettaton", 25, 2], "normal"
-"res/andy.png", ["Andy", 25, 2], "boss"
+"res/andy.png", ["Andy", 30, 10], "boss"
 "res/door.png", ["Knock-Knock", 25, 2], "normal"
 "res/crypto.png", ["Crypto", 25, 2], "normal"
 "res/cardgame.png", ["Card Game", 25, 2], "normal"

@@ -24,17 +24,20 @@ class World(object):
         print("{} is {}x{}".format(worldname, self.width, self.height))
         playerX = None
         playerY = None
-        bossTileX = None
-        bossTileY = None
+        bossX = None
+        bossY = None
         for x in range (0, self.width):
             for y in range(0, self.height):
                 if self.image.get_at((x, y)) == (255, 0, 0, 255) and playerX == None:
                     playerX = x
                     playerY = y
+                    print(playerX)
+                    print(playerY)
                     self.coordList[x][y] = (255, 255, 255) #there is not actually a red block there, rather it's blank
-                elif self.image.get_at((x, y)) == (0, 255, 0, 255) and bossTileX == None:
-                    bossTileX = x
-                    bossTileY = y
+                elif self.image.get_at((x, y)) == (0, 255, 0, 255) and bossX == None:
+                    self.bossX = x
+                    self.bossY = y
+                    self.coordList[x][y] = (255, 255, 255) #there is not actually a green block there, rather it's blank
                 else:
                     self.coordList[x][y] = (self.image.get_at((x, y))[0], self.image.get_at((x, y))[1], self.image.get_at((x, y))[2])
 
@@ -76,6 +79,12 @@ class World(object):
 
     def getScreenY(self):
         return self.screenY
+
+    def getBossX(self):
+        return self.bossX
+
+    def getBossY(self):
+        return self.bossY
 
 
 class Player(object):

@@ -42,14 +42,18 @@ class Battle():
     responseConsole = ""
     lastAction = 0
     animationInProgress = False
-    def __init__(self, player, game):
+    def __init__(self, player, game, type):
         self.game = game
         self.player = player
         self.actionList = [[self.game.config.getElement("action1"), self.attack], [self.game.config.getElement("action2"), self.flee]]
-        monsterList = self.game.config.getMonsterList()
-        randomNum = random.randint(0, len(monsterList) - 1)
-        monsterData = monsterList[randomNum]
-        self.currentMonster = Monster(monsterData[0], monsterData[1], monsterData[2])
+        if(type == "normal"):
+            monsterList = self.game.config.getMonsterList()
+            randomNum = random.randint(0, len(monsterList) - 1)
+            monsterData = monsterList[randomNum]
+            self.currentMonster = Monster(monsterData[0], monsterData[1], monsterData[2])
+        elif(type == "boss"):
+            monsterData = self.game.config.getBoss()
+            self.currentMonster = Monster(monsterData[0], monsterData[1], monsterData[2])
         if(not self.songPlaying):
             self.songPlaying = True
             self.playSong()

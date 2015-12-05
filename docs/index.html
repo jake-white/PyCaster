@@ -21,12 +21,21 @@
 Shouldn't matter too much.</p>
 
 <h2>Usage</h2>
+<h3>Level Editing</h3>
+<p>PyCaster reads in an image (by default, res/world.png, this is configurable) to use for its 2D map.</p>
+<p>The image is parsed at runtime and finds a <b>player tile</b> (where the player starts) and a <b>boss tile</b> (where the boss of the level is located) based on a configurable color of pixel.</p>
 <h3>Configuration</h3>
 Editable config files are located in /configs.
 <h4>gameconfig.txt</h4>
 <p>This file controls various game-related settings.</p>
+<p>Elements are added using the format <b>element=value</b>.</p>
+<p>The following elements currently support direction Python code evaluation (so that the user may input special values such as math.pi, etc.):</p>
+angle, FOV
 <h4>monsterconfig.txt</h4>
 <p>This file controls the possible monsters and bosses that are encounterable in PyCaster</p>
+<p>Monsters are added using the format <b>"filename.png", ["monster_name", hp, attack], "monster_type"</b>
+<p>There currently exist 2 types of monsters, "normal" and "boss".  Normal monsters are automatically added to the random encounter system and may be fought anywhere
+on the map. Boss monsters are automatically added to be encountered when the player hits the <b>boss tile</b>.</p>
 
 
 

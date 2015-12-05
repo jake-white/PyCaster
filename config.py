@@ -39,3 +39,6 @@ class Config():
 
     def getMonsterList(self):
         return self.monsters
+
+    def getBoss(self):
+        return self.boss
