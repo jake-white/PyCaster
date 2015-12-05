@@ -248,6 +248,10 @@ class Game():
         self.actionFrame = 0
         self.responseFrame = 0
 
+    def stop(self):
+        pygame.quit()
+        sys.exit()
+
 
 def configureScreen(screenX, screenY):
     pygame.init()

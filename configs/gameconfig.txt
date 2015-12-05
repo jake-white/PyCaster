@@ -30,7 +30,9 @@ HP=25
 hand_sprite=res/torch.png
 
 #Battles
-min_encounter_steps=1000
-max_encounter_steps=10000
+min_encounter_steps=100
+max_encounter_steps=500
 action1=Attack
 action2=Flee
+action1Message=You wave the torch at {}.  This burns the foe and deals {} damage
+bossFleeMessage=There is no fleeing from Andy himself!

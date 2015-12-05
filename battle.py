@@ -56,7 +56,7 @@ class Battle():
             self.currentMonster = Monster(monsterData[0], monsterData[1], monsterData[2])
         if(not self.songPlaying):
             self.songPlaying = True
-            self.playSong()
+            #self.playSong()
 
     def getMonster(self):
         return self.currentMonster
@@ -67,7 +67,7 @@ class Battle():
         self.stopSong()
 
     def action(self, actionNumber):
-        if(not self.checkEndCondition() and not self.animationInProgress):
+        if(not self.animationInProgress):
                 self.animationInProgress = True
                 self.actionConsole = ""
                 self.responseConsole = ""
@@ -88,22 +88,33 @@ class Battle():
         return self.actionList
 
     def attack(self):
-        self.actionConsole = self.actionConsole + ("You wave the torch at {}. ".format(self.currentMonster.getName()))
         damage = self.player.getAttack()
-        self.actionConsole = self.actionConsole + ("The fires burns the foe and deals {} damage. ".format(damage))
         self.currentMonster.damage(damage)
+        self.actionConsole = self.actionConsole + (self.game.config.getElement("action1Message").format(self.currentMonster.getName(), damage))
+        if(self.currentMonster.getAlive()):
+            self.actionConsole = self.actionConsole + (".")
+        else:
+            self.actionConsole = self.actionConsole + (", killing it.")
         if(self.currentMonster.getAlive()):
             monsterDamage = self.currentMonster.getAttack()
             self.player.damage(monsterDamage)
-            self.responseConsole = self.responseConsole + ("The enemy deals {} damage in return.".format(monsterDamage))
+            self.responseConsole = self.responseConsole + ("The enemy deals {} damage in return".format(monsterDamage))
+            if(self.player.getAlive()):
+                self.responseConsole = self.responseConsole + (".")
+            else:
+                self.responseConsole = self.responseConsole + (", killing you.")
+
         #using a different channel so both sounds can play simultaneously
         hit = pygame.mixer.Sound(self.game.config.getElement("hit_sound"))
         pygame.mixer.find_channel().queue(hit)
 
 
     def flee(self):
-        if(self.currentMonster.getType() != "boss"):
+        if(self.currentMonster.getType() == "boss"):
+            self.actionConsole = self.actionConsole = self.actionConsole + self.game.config.getElement("bossFleeMessage")
+        else:
             self.end()
+        animationInProgress = False
 
     def getActionConsole(self):
         return self.actionConsole
@@ -111,13 +122,11 @@ class Battle():
     def getResponseConsole(self):
         return self.responseConsole
 
-    def checkEndCondition(self):
-        #if the battle should end this will return True
-        return not self.currentMonster.getAlive() or not self.player.getAlive()
-
     def animationFinished(self):
         self.animationInProgress = False
-        if(self.checkEndCondition()):
+        if(not self.player.getAlive()):
+            self.game.stop()
+        elif(not self.currentMonster.getAlive()):
             self.end()
 
     def getEnemyHealth(self):
