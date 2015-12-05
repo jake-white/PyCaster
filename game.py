@@ -31,13 +31,13 @@ class Game():
     BATTLESTART = False
     devtools = False
     def __init__(self):
-        self.config = Config("configs/gameconfig.txt")
+        self.config = Config("configs/gameconfig.txt", "configs/monsterconfig.txt")
         self.lastFrame = timeInMillis()
         self.world = World(self.config.getElement("worldname"), self.config, self.screenX, self.screenY)
         self.caster = RayCaster(self.world, int(self.config.getElement("light")))
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
-        self.nextEncounter = random.randint(0, 100)
+        self.nextEncounter = random.randint(int(self.config.getElement("min_encounter_steps")), int(self.config.getElement("max_encounter_steps")))
         self.stepsSinceEncounter = 0
         self.devtools = eval(self.config.getElement("devtools"))
 
@@ -46,7 +46,7 @@ class Game():
 
     def tick(self): #this gets called every time the game loops (ticks)
         if(not self.INBATTLE):
-            if(timeInMillis() - self.lastPhysics > 200):
+            if(timeInMillis() - self.lastPhysics > 500):
                 lastPhysics = timeInMillis()
                 self.movementHandler()
 
@@ -74,6 +74,7 @@ class Game():
         white = (255,255,255)
         red = (255,0,0)
         black = (0,0,0)
+        green = (0, 255, 0)
         darkness = int(self.config.getElement("light"))*20
         screenY = self.world.getScreenY()
 
@@ -86,9 +87,8 @@ class Game():
 
         for i in range(0, len(self.caster.getColumnList())):
             if self.caster.getColumn(i) != None:
-                if(self.caster.getColumn(i) > 0.1):
-                    columnHeight = screenY/self.caster.getColumn(i)
-                else:
+                columnHeight = screenY/self.caster.getColumn(i)
+                if(columnHeight > screenY):
                     columnHeight = screenY
                 pointlist = [(i, int(screenY/2 - columnHeight/2)), (i, int(screenY/2 + columnHeight/2))]
                 topPointlist = [(i, int(screenY/2 - columnHeight/2)), (i, int(screenY/2 - columnHeight/2))]
@@ -103,25 +103,47 @@ class Game():
 
         font = pygame.font.SysFont("monospace", int(self.screenX/20))
         consoleFont = pygame.font.SysFont("monospace", int(self.screenX/50))
+        healthFont = pygame.font.SysFont("monospace", int(self.screenX/60))
         #battle HUD
         if(self.BATTLESTART):
             #displaying enemy
             enemy = pygame.image.load(self.battle.getMonster().getImage())
-            enemy = pygame.transform.scale(enemy, (int(enemy.get_width()*self.screenX/self.originalscreenX), int(enemy.get_height()*self.screenY/self.originalscreenY)))
-            self.screen.blit(enemy, (self.screenX/2 - enemy.get_width()/2, self.screenY/2))
+            enemy = pygame.transform.scale(enemy, (int(self.screenX/3), int((self.screenX/3)*(enemy.get_height()/enemy.get_width()))))
+            self.screen.blit(enemy, (self.screenX/2 - enemy.get_width()/2, self.screenY - enemy.get_height()))
             actionList = self.battle.getActionList()
+            #displaying health bars
+            text_color = eval(self.config.getElement("text_color"))
+            enemyHealth = healthFont.render(self.battle.getEnemyHealth(), 1, text_color)
+            playerHealth = healthFont.render(self.battle.getPlayerHealth(), 1, text_color)
+            healthBarWidth = int(self.screenX/10)
+            healthBarHeight = int(self.screenY/30)
+            pygame.draw.rect(self.screen, red, (int(self.screenX/20), int(self.screenY/3), healthBarWidth, healthBarHeight))
+            pygame.draw.rect(self.screen, red, (int(self.screenX/20), int(self.screenY*(2/3)), healthBarWidth, healthBarHeight))
+            pygame.draw.rect(self.screen, green, (int(self.screenX/20), int(self.screenY/3),
+                                                  healthBarWidth*self.battle.getEnemyPercent(), healthBarHeight))
+            pygame.draw.rect(self.screen, green, (int(self.screenX/20), int(self.screenY*(2/3)),
+                                                  int(healthBarWidth*self.battle.getPlayerPercent()), healthBarHeight))
+            self.screen.blit(enemyHealth, (int(self.screenX/20), int(self.screenY/3) - healthBarHeight*2))
+            self.screen.blit(playerHealth, (int(self.screenX/20), int(self.screenY*(2/3)) - healthBarHeight*2))
+
+            #displaying player actions
             for i in range(0, len(self.battle.getActionList())):
                 actionText = font.render(self.battle.getActionList()[i][0], 1, red)
-                pygame.draw.rect(self.screen, white, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2, actionText.get_width(), actionText.get_height()))
-                self.screen.blit(actionText, (self.screenX - (20 + actionText.get_width()), actionText.get_height()*(i+1)*2))
+                pygame.draw.rect(self.screen, white, (self.screenX - (int(self.screenX/20) + actionText.get_width()), actionText.get_height()*(i+1)*2, actionText.get_width(), actionText.get_height()))
+                self.screen.blit(actionText, (self.screenX - (int(self.screenX/20) + actionText.get_width()), actionText.get_height()*(i+1)*2))
             if(self.battle.getActionConsole() == ""):
                 self.actionFrame = 0
                 self.responseFrame = 0
             else:
                 if(len(self.battle.getActionConsole()) > self.actionFrame):
                     self.actionFrame += 2
+                    self.lastAnimationFrame = timeInMillis()
                 elif(len(self.battle.getResponseConsole()) > self.responseFrame):
                     self.responseFrame += 2
+                    self.lastAnimationFrame = timeInMillis()
+                else:
+                    if(timeInMillis() - self.lastAnimationFrame > 1000):
+                        self.battle.animationFinished()
                 actionText = consoleFont.render(self.battle.getActionConsole()[:self.actionFrame], 1, red)
                 responseText = consoleFont.render(self.battle.getResponseConsole()[:self.responseFrame], 1, red)
                 self.screen.blit(actionText, (self.screenX/2 - actionText.get_width()/2, actionText.get_height()))

@@ -8,6 +8,7 @@ devtools=False
 #World/Rendering
 worldname=res/world.png
 light=5
+text_color=(255, 0, 0)
 
 #Controls
 forwards=w
@@ -27,3 +28,9 @@ angle=0
 FOV=math.pi/2
 HP=25
 hand_sprite=res/torch.png
+
+#Battles
+min_encounter_steps=50
+max_encounter_steps=100
+action1=Attack
+action2=Flee

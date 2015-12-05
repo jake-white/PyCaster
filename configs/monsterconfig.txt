@@ -1,0 +1,12 @@
+#This file should be a list of all accessible monsters
+#The format should be:
+#("filename", ["name", hp, attack], "type")
+#Example=("res/mettatonEX.png", ["Mettaton", 25, 5], "boss")
+#Every normal type listed here will be accessible via random encounters
+#The first boss type listed here will be accessible via stepping on the boss tile
+
+#"res/mettatonEX.png", ["Mettaton", 25, 2], "normal"
+"res/andy.png", ["Andy", 25, 2], "boss"
+"res/door.png", ["Knock-Knock", 25, 2], "normal"
+"res/crypto.png", ["Crypto", 25, 2], "normal"
+"res/cardgame.png", ["Card Game", 25, 2], "normal"

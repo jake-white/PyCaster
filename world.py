@@ -24,12 +24,17 @@ class World(object):
         print("{} is {}x{}".format(worldname, self.width, self.height))
         playerX = None
         playerY = None
+        bossTileX = None
+        bossTileY = None
         for x in range (0, self.width):
             for y in range(0, self.height):
                 if self.image.get_at((x, y)) == (255, 0, 0, 255) and playerX == None:
                     playerX = x
                     playerY = y
                     self.coordList[x][y] = (255, 255, 255) #there is not actually a red block there, rather it's blank
+                elif self.image.get_at((x, y)) == (0, 255, 0, 255) and bossTileX == None:
+                    bossTileX = x
+                    bossTileY = y
                 else:
                     self.coordList[x][y] = (self.image.get_at((x, y))[0], self.image.get_at((x, y))[1], self.image.get_at((x, y))[2])
 
@@ -77,7 +82,7 @@ class Player(object):
     #angle measurements are in radians
     angle = 0
     FOV = math.pi/2
-    hp = 25
+    maxhp = 25
     attack = 5
 
     def __init__(self, config, world, x, y):
@@ -85,6 +90,7 @@ class Player(object):
         self.y = y
         self.world = world
         self.config = config
+        self.hp = self.maxhp
         self.angle = eval(self.config.getElement("angle"))
         self.FOV = eval(self.config.getElement("FOV"))
         self.hp = int(self.config.getElement("HP"))
@@ -135,6 +141,12 @@ class Player(object):
         self.hp -= dmg
         if(self.hp < 0):
             self.hp = 0
+
+    def getHP(self):
+        return self.hp
+
+    def getMaxHP(self):
+        return self.maxhp
 
     def getAlive(self):
         return self.hp > 0
