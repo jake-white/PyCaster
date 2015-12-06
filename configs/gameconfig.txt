@@ -9,6 +9,8 @@ devtools=False
 worldname=res/world.png
 light=5
 text_color=(255, 0, 0)
+screen_x=854
+screen_y=480
 
 #Controls
 forwards=w
@@ -30,8 +32,8 @@ HP=25
 hand_sprite=res/torch.png
 
 #Battles
-min_encounter_steps=100
-max_encounter_steps=500
+min_encounter_steps=0
+max_encounter_steps=5
 action1=Attack
 action2=Flee
 action1Message=You wave the torch at {}.  This burns the foe and deals {} damage

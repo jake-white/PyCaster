@@ -11,11 +11,8 @@ from config import *
 
 
 class Game():
-    originalscreenX = 854
-    originalscreenY = 480
-    screenX = 854
-    screenY = 480
-    screenRatio = 1
+    stepsSinceEncounter = 0
+    lastFrame = 0
     frameRate = 0
     lastPhysics = 0
     actionFrame = 0
@@ -32,14 +29,18 @@ class Game():
     devtools = False
     def __init__(self):
         self.config = Config("configs/gameconfig.txt", "configs/monsterconfig.txt")
-        self.lastFrame = timeInMillis()
+        #accessing some values from the configuration file
+        self.screenX = int(self.config.getElement("screen_x"))
+        self.screenY = int(self.config.getElement("screen_y"))
+        self.devtools = eval(self.config.getElement("devtools"))
+
+        #defining some objects for the game to run off of
         self.world = World(self.config.getElement("worldname"), self.config, self.screenX, self.screenY)
         self.caster = RayCaster(self.world, int(self.config.getElement("light")))
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
         self.nextEncounter = random.randint(int(self.config.getElement("min_encounter_steps")), int(self.config.getElement("max_encounter_steps")))
-        self.stepsSinceEncounter = 0
-        self.devtools = eval(self.config.getElement("devtools"))
+
 
     def start(self): #starting the game loop
         self.loop.start()
@@ -55,13 +56,15 @@ class Game():
         self.draw()
         self.frameRate = 1000/(timeInMillis()-self.lastFrame)
         self.lastFrame = timeInMillis()
-        #print("{}, {} vs {}, {}".format(int(self.world.getPlayer().getX()), int(self.world.getPlayer().getY()), self.world.getBossX(), self.world.getBossY()))
+
+        #dealing with battle encounters here
         if((not self.BATTLESTART) and int(self.world.getPlayer().getX()) == self.world.getBossX() and int(self.world.getPlayer().getY()) == self.world.getBossY()):
             self.battle = Battle(self.world.getPlayer(), self, "boss")
             self.BATTLESTART = True
             self.INBATTLE = True
             print("starting bossfight")
         elif(self.stepsSinceEncounter >= self.nextEncounter):
+            #turning the player in direction where the battle can be displayed
             if(self.caster.getColumn(int(self.screenX/2)) < 2):
                 self.BATTLESTART = False
                 self.world.getPlayer().increaseAngle(0.1)
@@ -71,9 +74,6 @@ class Game():
                 self.stepsSinceEncounter = 0
                 self.nextEncounter = random.randint(0, 100)
             self.INBATTLE = True
-
-        #making physics (movement) not tied to framerate
-        #*cough* looking at you Bethesda *cough*
 
 
     def draw(self): #draws everything onscreen
@@ -91,6 +91,7 @@ class Game():
             pygame.draw.line(self.screen, backColor, (0, i), (self.screenX, i), 10)
             pygame.draw.line(self.screen, backColor, (0, self.screenY - i), (self.screenX, self.screenY - i), 10)
 
+        #drawing columns onscreen based on raycaster
         for i in range(0, len(self.caster.getColumnList())):
             if self.caster.getColumn(i) != None:
                 columnHeight = screenY/self.caster.getColumn(i)
@@ -103,14 +104,16 @@ class Game():
                 pygame.draw.lines(self.screen, black, False, topPointlist, 1)
                 pygame.draw.lines(self.screen, black, False, bottomPointlist, 1)
 
+        #drawing player "hand" over the terrain
         hand_sprite = pygame.image.load(self.config.getElement("hand_sprite"))
+        hand_sprite = pygame.transform.scale(hand_sprite, (int(self.screenX/3), int(self.screenX/3*(hand_sprite.get_height()/hand_sprite.get_width()))))
         self.screen.blit(hand_sprite, (self.screenX - hand_sprite.get_width(), self.screenY - hand_sprite.get_height()))
 
-
+        #creating necessary fonts
         font = pygame.font.SysFont("monospace", int(self.screenX/20))
         consoleFont = pygame.font.SysFont("monospace", int(self.screenX/50))
         healthFont = pygame.font.SysFont("monospace", int(self.screenX/60))
-        #battle HUD
+        #drawing the battle HUD
         if(self.BATTLESTART):
             #displaying enemy
             enemy = pygame.image.load(self.battle.getMonster().getImage())
@@ -143,13 +146,10 @@ class Game():
             else:
                 if(len(self.battle.getActionConsole()) > self.actionFrame):
                     self.actionFrame += 2
-                    self.lastAnimationFrame = timeInMillis()
                 elif(len(self.battle.getResponseConsole()) > self.responseFrame):
                     self.responseFrame += 2
-                    self.lastAnimationFrame = timeInMillis()
                 else:
-                    if(timeInMillis() - self.lastAnimationFrame > 1000):
-                        self.battle.animationFinished()
+                    self.battle.animationFinished()
                 actionText = consoleFont.render(self.battle.getActionConsole()[:self.actionFrame], 1, red)
                 responseText = consoleFont.render(self.battle.getResponseConsole()[:self.responseFrame], 1, red)
                 self.screen.blit(actionText, (self.screenX/2 - actionText.get_width()/2, actionText.get_height()))
@@ -165,15 +165,18 @@ class Game():
             self.screen.blit(framerate, (0, 20))
             self.screen.blit(encounter, (0, 40))
 
+        #this finally draws everything to the screen
         pygame.display.update()
 
-    def eventCatcher(self): #catches pygame events
+    def eventCatcher(self):
         #catching pygame generated events
         for event in pygame.event.get():
             #closes both the pygame module and forces the program to end
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+            #getting keypresses
             key = "pygame.K_" + self.config.getElement("left")
             self.KEY_LEFT  = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("left"))]
             self.KEY_RIGHT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("right"))]
@@ -181,6 +184,8 @@ class Game():
             self.KEY_STRAFE_RIGHT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("strafe_right"))]
             self.KEY_FORWARDS = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("forwards"))]
             self.KEY_BACKWARDS = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("backwards"))]
+
+            #resizing the window
             if event.type == pygame.VIDEORESIZE:
                 self.world.setScreenX(event.dict['size'][0])
                 self.world.setScreenY(event.dict['size'][1])
@@ -244,13 +249,14 @@ class Game():
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
 
+    def stop(self):
+        pygame.quit()
+        sys.exit()
+
     def clearAnimation(self):
         self.actionFrame = 0
         self.responseFrame = 0
 
-    def stop(self):
-        pygame.quit()
-        sys.exit()
 
 
 def configureScreen(screenX, screenY):

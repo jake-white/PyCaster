@@ -7,10 +7,10 @@ from game import *
 
 
 def main():
+    #Creating the main game object
     game = Game()
     game.start()
-    #game.tick()
-    print("Started.")
+    print("Game started.")
 
 
 
