@@ -33,6 +33,9 @@ class Game():
         self.screenX = int(self.config.getElement("screen_x"))
         self.screenY = int(self.config.getElement("screen_y"))
         self.devtools = eval(self.config.getElement("devtools"))
+        self.locked_res = self.config.getElement("locked_res") == "yes"
+        self.resX = self.screenX
+        self.resY = self.screenY
 
         #defining some objects for the game to run off of
         self.world = World(self.config.getElement("worldname"), self.config, self.screenX, self.screenY)
@@ -65,7 +68,7 @@ class Game():
             print("starting bossfight")
         elif(self.stepsSinceEncounter >= self.nextEncounter):
             #turning the player in direction where the battle can be displayed
-            if(self.caster.getColumn(int(self.screenX/2)) < 2):
+            if(not self.caster.getColumn(int(self.resX/2)) == None and self.caster.getColumn(int(self.resX/2)) < 2):
                 self.BATTLESTART = False
                 self.world.getPlayer().increaseAngle(0.1)
             else:
@@ -91,18 +94,26 @@ class Game():
             pygame.draw.line(self.screen, backColor, (0, i), (self.screenX, i), 10)
             pygame.draw.line(self.screen, backColor, (0, self.screenY - i), (self.screenX, self.screenY - i), 10)
 
+        if(self.locked_res):
+            increment = self.screenX/self.resX
+            print(increment)
+        else:
+            increment = 1
         #drawing columns onscreen based on raycaster
+        lastXValue = 0
         for i in range(0, len(self.caster.getColumnList())):
+            lastXValue += increment
             if self.caster.getColumn(i) != None:
                 columnHeight = screenY/self.caster.getColumn(i)
                 if(columnHeight > screenY):
                     columnHeight = screenY
-                pointlist = [(i, int(screenY/2 - columnHeight/2)), (i, int(screenY/2 + columnHeight/2))]
-                topPointlist = [(i, int(screenY/2 - columnHeight/2)), (i, int(screenY/2 - columnHeight/2))]
-                bottomPointlist = [(i, int(screenY/2 + columnHeight/2)), (i, int(screenY/2 + columnHeight/2))]
-                pygame.draw.lines(self.screen, self.caster.getColor(i), False, pointlist, 1)
-                pygame.draw.lines(self.screen, black, False, topPointlist, 1)
-                pygame.draw.lines(self.screen, black, False, bottomPointlist, 1)
+                columnRect = pygame.Rect(int(lastXValue), int(screenY/2 - columnHeight/2), increment + 1, columnHeight)
+                topRect = pygame.Rect(int(lastXValue), int(screenY/2 - columnHeight/2) - 1, increment + 1, 1)
+                bottomRect = pygame.Rect(int(lastXValue), int(screenY/2 + columnHeight/2) + 1, increment + 1, 1)
+                pygame.draw.rect(self.screen, self.caster.getColor(i), columnRect, 0)
+                pygame.draw.rect(self.screen, black, topRect, 0)
+                pygame.draw.rect(self.screen, black, bottomRect, 0)
+
 
         #drawing player "hand" over the terrain
         hand_sprite = pygame.image.load(self.config.getElement("hand_sprite"))
@@ -260,18 +271,20 @@ class Game():
 
 
 def configureScreen(screenX, screenY):
+    #this creates a pygame screen
     pygame.init()
     screen = pygame.display.set_mode((screenX, screenY), pygame.RESIZABLE)
     pygame.display.set_caption("PyCaster")
     return screen
 
 def timeInMillis():
+    #returns the current time in milliseconds
     return time.time() * 1000
 
 def validateAngle(angle):
-        #ensures the current angle is between 0 and 2pi
-        while angle >= 2*math.pi:
-            angle -= 2*math.pi
-        while angle < 0:
-            angle += 2*math.pi
-        return angle
+    #ensures the current angle is between 0 and 2pi
+    while angle >= 2*math.pi:
+        angle -= 2*math.pi
+    while angle < 0:
+        angle += 2*math.pi
+    return angle

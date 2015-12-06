@@ -2,6 +2,7 @@ import math
 
 
 class RayCaster(object):
+    lineCutOff = 10000
     def __init__(self, world, light):
         self.world = world
         self.light = light
@@ -10,11 +11,11 @@ class RayCaster(object):
 
 
     def cast(self):
-        self.columns = [None] * self.world.getScreenX()
-        self.colors = [None] * self.world.getScreenX()
-        self.columnHeight = [1] * self.world.getScreenX()
+        self.columns = [None] * self.world.getResX()
+        self.colors = [None] * self.world.getResX()
+        self.columnHeight = [1] * self.world.getResX()
         #defining some stuff to make this easier and not call 12 thousand functions every line
-        screenX = self.world.getScreenX()
+        screenX = self.world.getResX()
         angleIncrement = self.getPlayer().getFOV()/screenX
         angle = validateAngle(self.getPlayer().getAngle())
         startingAngle = angle + self.getPlayer().getFOV()/2
@@ -62,7 +63,7 @@ class RayCaster(object):
                 elif self.world.getCoordAt(checkX, checkY) != (255, 255, 255):
                     hit = True
                     distanceX = self.distanceTo(playerX, playerY, currentX, currentY)*fisheye
-                    if(currentX %1 < 0.05):
+                    if(self.world.config.getElement("block_lines") == "yes" and currentX %1 < screenX/self.lineCutOff):
                         colorX = (0, 0, 0)
                     else:
                         colorX = self.world.getCoordAt(checkX, checkY)
@@ -102,7 +103,7 @@ class RayCaster(object):
                 elif self.world.getCoordAt(checkX, checkY) != (255, 255, 255):
                     hit = True
                     distanceY = self.distanceTo(playerX, playerY, currentX, currentY)*fisheye
-                    if(currentY %1 < 0.05):
+                    if(self.world.config.getElement("block_lines") == "yes" and currentY %1 < screenX/self.lineCutOff):
                         colorY = (0,0,0)
                     else:
                         colorY = self.world.getCoordAt(checkX, checkY)

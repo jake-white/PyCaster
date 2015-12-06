@@ -3,14 +3,16 @@
 #element=value
 
 #Developer Tools
-devtools=False
+devtools=True
 
 #World/Rendering
+locked_res=yes
 worldname=res/world.png
+block_lines=yes
 light=5
 text_color=(255, 0, 0)
-screen_x=854
-screen_y=480
+screen_x=800
+screen_y=600
 
 #Controls
 forwards=w
@@ -32,8 +34,8 @@ HP=25
 hand_sprite=res/torch.png
 
 #Battles
-min_encounter_steps=0
-max_encounter_steps=5
+min_encounter_steps=100
+max_encounter_steps=200
 action1=Attack
 action2=Flee
 action1Message=You wave the torch at {}.  This burns the foe and deals {} damage

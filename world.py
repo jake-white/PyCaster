@@ -9,7 +9,10 @@ class World(object):
         object.__init__(self)
         self.screenX = screenX
         self.screenY = screenY
+        self.resX = screenX
+        self.resY = screenY
         self.config = config
+        self.locked_res = self.config.getElement("locked_res") == "yes"
         print(worldname)
         self.readImage(worldname)
 
@@ -70,15 +73,25 @@ class World(object):
 
     def setScreenX(self, screenX):
         self.screenX = screenX
+        if(not self.locked_res):
+            self.resX = self.screenX
 
     def setScreenY(self, screenY):
         self.screenY = screenY
+        if(not self.locked_res):
+            self.resY = self.screenY
 
     def getScreenX(self):
         return self.screenX
 
     def getScreenY(self):
         return self.screenY
+
+    def getResX(self):
+        return self.resX
+
+    def getResY(self):
+        return self.resY
 
     def getBossX(self):
         return self.bossX
