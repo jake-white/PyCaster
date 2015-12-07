@@ -56,7 +56,7 @@ class Battle():
             self.currentMonster = Monster(monsterData[0], monsterData[1], monsterData[2])
         if(not self.songPlaying):
             self.songPlaying = True
-            #self.playSong()
+            self.playSong()
 
     def getMonster(self):
         return self.currentMonster
