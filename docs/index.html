@@ -8,7 +8,7 @@
 
 <p>To use this program, you will need to install pygame (gaming/drawing engine), which can be found in the lib folder of this project (32/64-bit files were both included).
 </p>
-<p>If you're not using Python 3.5, you will probably need to download the correct version of it yourself at http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame.</p>
+<p>If you're not using Python 3.5, you will probably need to download the correct version of it yourself <a href = "http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygame.">here</a>.</p>
 <p>Move the .whl file to <b>C:\Wherever\Python35\Scripts</b>.</p>
 
 
@@ -29,8 +29,78 @@ Editable config files are located in /configs.
 <h4>gameconfig.txt</h4>
 <p>This file controls various game-related settings.</p>
 <p>Elements are added using the format <b>element=value</b>.</p>
-<p>The following elements currently support direction Python code evaluation (so that the user may input special values such as math.pi, etc.):</p>
-angle, FOV
+<p>The following elements currently support direction Python code evaluation (so that the user may input special values such as math.pi, colors, etc.):</p>
+<p>angle, FOV, text_color</p>
+
+
+<table border="1">
+<tr><td colspan = "2" align = "center"><b>Developer Tools</b></td></tr>
+<tr><td>devtools:</td>
+<td>Whether or not developer tools display in the top left</td></tr>
+
+<tr><td colspan = "2" align = "center"><b>World/Rendering</b></td></tr>	
+<tr><td>worldname:</td>
+<td>This is the image file that the program reads in as the game map</td></tr>
+<tr><td>block_lines:</td>
+<td>Whether or not the blocks are outlined vertically</td></tr>
+<tr><td>light:</td>
+<td>Lighting level surrounding the player</td></tr>
+<tr><td>text_color:</td>
+<td>The color of the battle and developer tool text</td></tr>
+<tr><td>locked_res:</td>
+<td>Whether resizing the window keeps the fixed resolution or fits to the window</td></tr>
+<tr><td>screen_x:</td>
+<td>Starting width of the window</td></tr>
+<tr><td>screen_y:</td>
+<td>Starting height of the window</td></tr>
+
+<tr><td colspan = "2" align = "center"><b>Controls</b></td></tr>
+<tr><td>forwards:</td>
+<td>Key to move forwards</td></tr>
+<tr><td>backwards:</td>
+<td>Key to move backwards</td></tr>
+<tr><td>left:</td>
+<td>Key to turn to the left</td></tr>
+<tr><td>right:</td>
+<td>Key to turn to the right</td></tr>
+<tr><td>strafe_left:</td>
+<td>Key to strafe left</td></tr>
+<tr><td>strafe_right:</td>
+<td>Key to strafe right</td></tr>
+
+<tr><td colspan = "2" align = "center"><b>Music</b></td></tr>
+<tr><td>battle_music:</td>
+<td>Music played during normal random encounters</td></tr>
+<tr><td>boss_music:</td>
+<td>Music played during boss encounter</td></tr>
+<tr><td>hit_sound:</td>
+<td>Sound effect played when the player attacks</td></tr>
+
+<tr><td colspan = "2" align = "center"><b>Player</b></tr>
+<tr><td>angle:</td>
+<td>Starting angle of the player in radians</td></tr>
+<tr><td>FOV:</td>
+<td>Starting field of view of the player in radians</td></tr>
+<tr><td>HP:</td>
+<td>Player hitpoints</td></tr>
+<tr><td>hand_sprite:</td>
+<td>Sprite displayed in front of, or in the hand of, the player over the terrain</td></tr>
+
+<tr><td colspan = "2" align = "center"><b>Battles</b></td></tr>
+<tr><td>min_encounter_steps:</td>
+<td>Minimum amount of steps to a random encounter</td></tr>
+<tr><td>max_encounter_steps:</td>
+<td>Maximum amount of steps to a random encounter</td></tr>
+<tr><td>action1:</td>
+<td>The name of the first battle action</td></tr>
+<tr><td>action2:</td>
+<td>The name of the second battle action</td></tr>
+<tr><td>action1Message:</td>
+<td>The message that displays when using the first battle action. This supports using two '{}', where the first is replaced with the enemy name and the second with damage.</td></tr>
+<tr><td>bossFleeMessage:</td>
+<td>The message displayed when the player tries and fails to flee a boss battle</td></tr>
+</table>
+
 <h4>monsterconfig.txt</h4>
 <p>This file controls the possible monsters and bosses that are encounterable in PyCaster</p>
 <p>Monsters are added using the format <b>"filename.png", ["monster_name", hp, attack], "monster_type"</b>
@@ -42,10 +112,10 @@ on the map. Boss monsters are automatically added to be encountered when the pla
 <h2>Sources/More Information</h2>
 
 
-<p>http://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/ - Somewhat outdated, but still solid to understand the concept behind raycasting.
+<p><a href = "http://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/">Permadi Raycasting</a> - Somewhat outdated, but still solid to understand the concept behind raycasting.
 (To give you an idea, the article was published in 1996)</p>
 
-<p>http://opengameart.org/ - Source for the enemy sprites</p>
+<p><a href = "http://opengameart.org/">Open Game Art</a> - Source for the enemy sprites</p>
 
 
 </html>
