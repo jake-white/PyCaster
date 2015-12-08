@@ -63,8 +63,12 @@ class Game():
         self.lastFrame = timeInMillis()
 
         #dealing with battle encounters here
-        if((not self.BATTLESTART) and int(self.world.getPlayer().getX()) == self.world.getBossX() and int(self.world.getPlayer().getY()) == self.world.getBossY()):
-            self.battle = Battle(self.world.getPlayer(), self, "boss")
+        print(self.world.getBossAlive())
+        if((not self.BATTLESTART)
+           and int(self.world.getPlayer().getX()) == self.world.getBossX()
+           and int(self.world.getPlayer().getY()) == self.world.getBossY()
+           and self.world.getBossAlive()):
+            self.battle = Battle(self.world, self, "boss")
             self.BATTLESTART = True
             self.INBATTLE = True
             print("starting bossfight")
@@ -74,7 +78,7 @@ class Game():
                 self.BATTLESTART = False
                 self.world.getPlayer().increaseAngle(0.1)
             else:
-                self.battle = Battle(self.world.getPlayer(), self, "normal")
+                self.battle = Battle(self.world, self, "normal")
                 self.BATTLESTART = True
                 self.stepsSinceEncounter = 0
                 self.nextEncounter = random.randint(int(self.config.getElement("min_encounter_steps")), int(self.config.getElement("max_encounter_steps")))
@@ -204,6 +208,8 @@ class Game():
                 self.screenX = event.dict['size'][0]
                 self.screenY = event.dict['size'][1]
                 self.screen = pygame.display.set_mode(event.dict['size'], pygame.RESIZABLE)
+
+            #calling battle actions based on keypresses
             if(self.BATTLESTART):
                 actionNumber = 0
                 for i in range(pygame.K_1, pygame.K_4):
@@ -224,6 +230,8 @@ class Game():
             yDir = 1
         else:
             yDir = -1
+
+        #checking each key and doing calculations to move/turn in a direction
         if self.KEY_LEFT:
             self.world.getPlayer().increaseAngle(0.1)
         elif self.KEY_RIGHT:
@@ -272,7 +280,7 @@ class Game():
 
 
 def configureScreen(screenX, screenY):
-    #this creates a pygame screen
+    #this creates and returns a pygame screen
     pygame.init()
     screen = pygame.display.set_mode((screenX, screenY), pygame.RESIZABLE)
     pygame.display.set_caption("PyCaster")

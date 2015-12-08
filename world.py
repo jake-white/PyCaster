@@ -2,8 +2,8 @@ import math
 import pygame
 
 
-class World(object):
-
+class World(object): #this contains information about the world (map, screen size, etc)
+    bossAlive = True
     def __init__(self, worldname, config, screenX, screenY):
         print("creating new world")
         object.__init__(self)
@@ -29,15 +29,19 @@ class World(object):
         playerY = None
         bossX = None
         bossY = None
+
+        #iterating through the image and storing every pixel by color
         for x in range (0, self.width):
             for y in range(0, self.height):
                 if self.image.get_at((x, y)) == (255, 0, 0, 255) and playerX == None:
+                    #this is the player spawn point
                     playerX = x
                     playerY = y
                     print(playerX)
                     print(playerY)
                     self.coordList[x][y] = (255, 255, 255) #there is not actually a red block there, rather it's blank
                 elif self.image.get_at((x, y)) == (0, 255, 0, 255) and bossX == None:
+                    #this is the boss spawn point
                     self.bossX = x
                     self.bossY = y
                     self.coordList[x][y] = (255, 255, 255) #there is not actually a green block there, rather it's blank
@@ -98,6 +102,12 @@ class World(object):
 
     def getBossY(self):
         return self.bossY
+
+    def killBoss(self):
+        self.bossAlive = False
+
+    def getBossAlive(self):
+        return self.bossAlive
 
 
 class Player(object):
