@@ -126,6 +126,8 @@ class Player(object):
         self.angle = eval(self.config.getElement("angle"))
         self.FOV = eval(self.config.getElement("FOV"))
         self.hp = int(self.config.getElement("HP"))
+        self.height = 0
+        self.cam = 1;
 
     def collisionCorrection(self):
         if((self.world.getCoordAt(self.x, self.y) != (255, 255, 255) and self.world.getCoordAt(self.x, self.y) != (255, 0, 0)) or
@@ -136,6 +138,26 @@ class Player(object):
 
     def getX(self):
         return self.x
+
+
+    def getHeight(self):
+        return self.height;
+
+    def increaseHeight(self):
+        self.height+=0.1;
+
+    def decreaseHeight(self):
+        self.height-=0.1;
+
+
+    def getCam(self):
+        return self.cam;
+
+    def increaseCam(self):
+        self.cam+=0.1;
+
+    def decreaseCam(self):
+        self.cam-=0.1;
 
     def getY(self):
         return self.y

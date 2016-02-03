@@ -23,6 +23,10 @@ class Game():
     KEY_BACKWARDS = False
     KEY_STRAFE_LEFT = False
     KEY_STRAFE_RIGHT = False
+    KEY_HEIGHTUP = False
+    KEY_HEIGHTDOWN = False
+    KEY_ANGLEUP = False
+    KEY_ANGLEDOWN = False
     songPlaying = False
     INBATTLE = False
     BATTLESTART = False
@@ -106,18 +110,23 @@ class Game():
             increment = 1
         #drawing columns onscreen based on raycaster
         lastXValue = 0
+        print(self.world.getPlayer().getCam())
         for i in range(0, len(self.caster.getColumnList())):
             lastXValue += increment
             if self.caster.getColumn(i) != None:
                 columnHeight = screenY/self.caster.getColumn(i)
                 if(columnHeight > screenY):
                     columnHeight = screenY
-                columnRect = pygame.Rect(int(lastXValue), int(screenY/2 - columnHeight/2), increment + 1, columnHeight)
-                topRect = pygame.Rect(int(lastXValue), int(screenY/2 - columnHeight/2) - 1, increment + 1, 1)
-                bottomRect = pygame.Rect(int(lastXValue), int(screenY/2 + columnHeight/2) + 1, increment + 1, 1)
+                columnX = int(lastXValue)
+                columnY = int(screenY/2 - columnHeight/2) + columnHeight*self.world.getPlayer().getHeight() - 100*self.world.getPlayer().getCam()
+                rectWidth = increment + 1
+                rectHeight = columnHeight - int(10/(columnHeight*(1/self.world.getPlayer().getCam())))
+                columnRect = pygame.Rect(columnX, columnY, rectWidth, rectHeight)
+                #topRect = pygame.Rect(int(lastXValue), int(screenY/2 - columnHeight/2) - 1, increment + 1, 1)
+                #bottomRect = pygame.Rect(int(lastXValue), int(screenY/2 + columnHeight/2) + 1, increment + 1, 1)
                 pygame.draw.rect(self.screen, self.caster.getColor(i), columnRect, 0)
-                pygame.draw.rect(self.screen, black, topRect, 0)
-                pygame.draw.rect(self.screen, black, bottomRect, 0)
+                #pygame.draw.rect(self.screen, black, topRect, 0)
+                #pygame.draw.rect(self.screen, black, bottomRect, 0)
 
 
         #drawing player "hand" over the terrain
@@ -200,6 +209,11 @@ class Game():
             self.KEY_STRAFE_RIGHT = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("strafe_right"))]
             self.KEY_FORWARDS = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("forwards"))]
             self.KEY_BACKWARDS = pygame.key.get_pressed()[eval("pygame.K_" + self.config.getElement("backwards"))]
+            if(self.devtools):
+                self.KEY_HEIGHTUP = pygame.key.get_pressed()[pygame.K_z];
+                self.KEY_HEIGHTDOWN = pygame.key.get_pressed()[pygame.K_x];
+                self.KEY_ANGLEUP = pygame.key.get_pressed()[pygame.K_r];
+                self.KEY_ANGLEDOWN = pygame.key.get_pressed()[pygame.K_f];
 
             #resizing the window
             if event.type == pygame.VIDEORESIZE:
@@ -246,6 +260,14 @@ class Game():
             self.world.getPlayer().increaseY(-yDir*math.fabs(math.sin(currentAngle)*0.1))
             self.world.getPlayer().collisionCorrection()
             self.stepsSinceEncounter += 1
+        if self.KEY_HEIGHTUP:
+            self.world.getPlayer().increaseHeight();
+        elif self.KEY_HEIGHTDOWN:
+            self.world.getPlayer().decreaseHeight();
+        if self.KEY_ANGLEUP:
+            self.world.getPlayer().increaseCam();
+        elif self.KEY_ANGLEDOWN:
+            self.world.getPlayer().decreaseCam();
         currentAngle -= math.pi/2
         currentAngle = validateAngle(currentAngle)
         posDirX = currentAngle < math.pi/2 or currentAngle > (3/2)*math.pi

@@ -3,7 +3,7 @@
 #element=value
 
 #Developer Tools
-devtools=False
+devtools=True
 
 #World/Rendering
 worldname=res/world.png
@@ -11,8 +11,8 @@ block_lines=yes
 light=5
 text_color=(255, 0, 0)
 locked_res=yes
-screen_x=400
-screen_y=300
+screen_x=200
+screen_y=150
 
 #Controls
 forwards=w
