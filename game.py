@@ -47,8 +47,6 @@ class Game():
         self.loop = Timer(self.tick)
         self.screen = configureScreen(self.screenX, self.screenY)
         self.nextEncounter = random.randint(int(self.config.getElement("min_encounter_steps")), int(self.config.getElement("max_encounter_steps")))
-        print(int(self.config.getElement("min_encounter_steps")))
-        print(self.nextEncounter)
 
 
     def start(self): #starting the game loop
@@ -67,7 +65,6 @@ class Game():
         self.lastFrame = timeInMillis()
 
         #dealing with battle encounters here
-        print(self.world.getBossAlive())
         if((not self.BATTLESTART)
            and int(self.world.getPlayer().getX()) == self.world.getBossX()
            and int(self.world.getPlayer().getY()) == self.world.getBossY()
@@ -110,7 +107,6 @@ class Game():
             increment = 1
         #drawing columns onscreen based on raycaster
         lastXValue = 0
-        print(self.world.getPlayer().getCam())
         for i in range(0, len(self.caster.getColumnList())):
             lastXValue += increment
             if self.caster.getColumn(i) != None:
